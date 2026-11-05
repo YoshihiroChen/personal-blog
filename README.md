@@ -110,3 +110,11 @@ Facility plans now float directly over the star field, with no enclosing card, b
 Both landing sites now have three-dimensional facilities aligned to the lunar surface: terraced foundations, habitats, solar arrays, observation domes, antennas, airlocks and landing pads. The Languages base includes a communications dish. Models and labels both enter their respective base; hovering highlights the landing area. Per user preference, changes are saved without running tests, builds or services.
 
 The lunar landing page is titled **My Knowledge & Skills**. Facility overviews omit the large title/description block, place the Moon surface return button inside the plan, and fit the full facility to the available width and height. The drawing starts one grid cell above the first chamber row; mobile uses compact room labels rather than requiring a horizontal pan. Workstation pages retain their individual headings.
+
+### My Works / Expedition fleet
+
+The solar map now includes three independently selectable vessels in a bounded formation: a flagship for My Works, a research vessel for one IT project, and a communications vessel for one language project. Models use bevelled hulls, bridge decks, engines, lit windows, solar/radiator wings, research pods and a communications dish. No external model, texture or new dependency is required. The fleet drifts gently; reduced motion stops the drift.
+
+The My Works navigation item sits after Knowledge; Travel Earth now precedes Inner Worlds. `/works/` opens the flagship introduction; `/works/?ship=research` and `/works/?ship=communications` select a project slot directly. Clicking a ship in the overview enters the fleet scene and displays its content. A dock provides keyboard/touch selection, and search includes all three vessels. Existing planetary orbital data and knowledge hierarchy are unchanged. Actual project names, dates, technologies and links await user-provided details; the two slots explicitly say DETAILS COMING SOON.
+
+Code and test definitions are saved. Tests, type checks, builds and preview remain manual, as requested.

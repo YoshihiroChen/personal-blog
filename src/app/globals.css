@@ -197,3 +197,46 @@ a.planet-label em strong{display:block;margin-top:8px;font-size:10px;color:#e8c8
 @supports(width:1cqh){.is-floorplan .base-plan{width:min(100%,calc(100cqh * 1.658375))}}
 .base-plan .lunar-map-return{position:absolute;left:11%;bottom:4%;z-index:2;max-width:28%;font-size:10px;padding:8px 10px;gap:6px;background:#0b1422ad}
 @media(max-width:700px){.is-floorplan .base-chamber{padding:5px 7px;border-radius:5px}.is-floorplan .chamber-code{font-size:5px;letter-spacing:.5px;gap:5px}.is-floorplan .chamber-code .chamber-light{width:3px;height:3px}.is-floorplan .base-chamber strong{font-size:11px;line-height:1.2;margin:4px 0;max-width:100%}.is-floorplan .chamber-caption{font-size:6px;letter-spacing:0}.is-floorplan .chamber-arrow{width:9px;height:9px;right:5px;top:5px}.base-plan .lunar-map-return{font-size:8px;padding:6px;gap:4px}.base-plan .lunar-map-return svg{width:10px;height:10px}}
+
+/* My Works — a small expedition fleet, separate from the planetary orbits. */
+.fleet-label-anchor{pointer-events:none}
+.fleet-label{pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:5px;padding:9px 13px;border:1px solid #c9d2d32b;border-radius:4px;background:#0a1320b8;color:#c2d0dc;white-space:nowrap;text-shadow:0 2px 8px #000;transition:opacity .2s,border-color .2s,background .2s}
+.fleet-label small{font-size:7px;letter-spacing:1.7px;color:var(--ship-accent)}
+.fleet-label strong{font-size:12px;letter-spacing:.5px;font-weight:400}
+.fleet-label>span{font-size:8px;color:#899eaf}
+.fleet-label-quiet{opacity:0;pointer-events:none}
+.fleet-label:is(.is-highlighted,:hover,:focus-visible){opacity:1;pointer-events:auto;border-color:var(--ship-accent);background:#182637ed}
+.works-view .section-heading,.works-view .year-control{display:none}
+.works-explorer{position:absolute;inset:132px 4.1% 22px;z-index:6;pointer-events:none}
+.works-explorer button,.works-explorer a{pointer-events:auto}
+.works-path{display:flex;align-items:center;gap:10px;color:#9baabb;font-size:10px;letter-spacing:.3px}
+.works-path button{display:flex;align-items:center;gap:7px;padding:5px 0;color:#a0b1bf;font-size:10px}
+.works-path button:hover{color:#d9c29a}.works-path>svg{color:#617489}
+.works-scene-caption{position:absolute;left:2%;top:60px}
+.works-scene-caption .eyebrow{font-size:8px;letter-spacing:1.8px;color:#a99c87}
+.works-scene-caption h1{font-family:var(--serif);font-size:40px;line-height:1.2;font-weight:400;letter-spacing:-1px;margin:14px 0 10px}
+.works-scene-caption p{font-size:12px;color:#8294a9;letter-spacing:.3px;margin:0}
+.works-panel{position:absolute;right:0;top:35px;width:38%;max-height:calc(100% - 45px);overflow:auto;pointer-events:auto;padding:28px 30px;border-radius:7px;outline:none;scrollbar-width:thin;scrollbar-color:#425368 transparent}
+.works-panel .panel-top{margin-bottom:22px}.works-panel .panel-top .eyebrow{font-size:7px;letter-spacing:1.6px;color:var(--ship-accent)}
+.works-emblem{display:grid;place-items:center;width:52px;height:52px;border:1px solid #d5c39f30;border-radius:50%;color:#c8b694;background:radial-gradient(circle,#d1b57e13,transparent)}
+.works-panel h2{font-family:var(--serif);font-size:clamp(25px,2.5vw,37px);line-height:1.3;letter-spacing:-.7px;font-weight:400;color:#dce2e6;margin:24px 0 18px}
+.works-intro{font-size:13px;line-height:2;color:#9dafc1;letter-spacing:0}
+.works-summary{margin-top:25px;border-top:1px solid #acbbc82a}
+.works-summary>button{width:100%;display:flex;align-items:center;gap:14px;padding:20px 0;border-bottom:1px solid #acbbc81f;text-align:left;color:#c8d3dc;font-size:13px}
+.works-summary>button>svg:first-child{color:#a5b7c5}.works-summary>button>span{flex:1;line-height:1.5}
+.works-summary small{display:block;font-size:10px;line-height:1.8;color:#7d91a6;margin-top:5px}.works-summary>button:hover{color:#e1c7a0}
+.works-note{font-size:10px;line-height:1.9;color:#70849b;margin-top:24px}
+.works-status{display:inline-block;font-size:7px;letter-spacing:1.5px;padding:6px 8px;border:1px solid #b8b09d33;color:var(--ship-accent);margin-bottom:8px}
+.works-project-sections section{border-top:1px solid #acbbc824;padding:19px 0}
+.works-project-sections h3{font-size:12px;font-weight:400;letter-spacing:.5px;color:#c7d5de;margin:0 0 9px}
+.works-project-sections p{font-size:12px;line-height:1.9;color:#8298ad;margin:0}
+.works-dock{position:absolute;left:0;bottom:0;max-width:58%;display:flex;gap:10px;pointer-events:auto}
+.works-dock button{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid #adc0cc2b;background:#0b1420c9;border-radius:4px;text-align:left;color:#a4b6c5;font-size:11px}
+.works-dock button[aria-current],.works-dock button:hover{border-color:var(--ship-accent);color:#e0d4bf;background:#192535e6}
+.works-dock-code{font-size:7px;letter-spacing:1px;color:var(--ship-accent);white-space:nowrap}
+.works-dock button small{display:block;font-size:8px;line-height:1.6;color:#6f859b;margin-top:5px}
+.works-dock button>svg{flex-shrink:0;color:var(--ship-accent)}
+.works-select-hint{position:absolute;right:0;top:65px;width:36%;font-family:var(--serif);font-size:26px;line-height:1.6;color:#b7c7d4}
+@media(max-width:1190px){.works-panel{width:40%;padding:24px}.works-dock{flex-wrap:wrap;gap:7px;max-width:56%}.works-dock button{padding:10px 12px}.works-dock-code{display:none}.works-scene-caption h1{font-size:34px}}
+@media(max-width:700px){.works-explorer{inset:145px 5% 16px}.works-path{font-size:8px;gap:7px}.works-path button{font-size:9px}.works-scene-caption{top:45px;left:1%}.works-scene-caption h1{font-size:28px;margin:9px 0 7px}.works-scene-caption .eyebrow{font-size:6px;letter-spacing:1px}.works-scene-caption p{font-size:10px}.works-panel{top:auto;bottom:80px;right:0;width:100%;max-height:36svh;padding:20px 23px}.works-panel h2{font-size:26px;margin:14px 0}.works-panel .panel-top{margin-bottom:14px}.works-emblem{display:none}.works-intro{font-size:11px;line-height:1.9}.works-summary{margin-top:15px}.works-summary>button{padding:14px 0;font-size:12px}.works-summary small{font-size:9px}.works-note{font-size:9px;margin-top:18px}.works-project-sections p{font-size:11px}.works-dock{max-width:none;width:100%;gap:6px;flex-wrap:nowrap}.works-dock button{flex:1;min-width:0;padding:10px 8px;font-size:9px;line-height:1.5;gap:0}.works-dock button>span:not(.works-dock-code){min-width:0;overflow-wrap:anywhere}.works-dock button>svg{display:none}.works-dock button small{font-size:7px;margin-top:4px}.fleet-label{padding:7px 9px;gap:4px}.fleet-label strong{font-size:10px}.fleet-label>span{font-size:7px}.fleet-label small{font-size:6px}.works-select-hint{width:80%;right:10%;top:60%;font-size:23px;text-align:center}}
+@media(prefers-reduced-motion:reduce){.fleet-label{transition:none}}

@@ -8,6 +8,7 @@ import gsap from 'gsap';
 import { planetHref } from '@/lib/planets';
 import { moonSurfaceTexture } from '@/lib/moon-surface';
 import LunarBase from './LunarBase';
+import Fleet from './Fleet';
 import { lunarBases, lunarLocation } from '@/lib/lunar';
 import { canvasPointer } from '@/lib/pointer';
 import { useUniverse } from '@/stores/universe';
@@ -55,8 +56,8 @@ function CameraRig({ controls }: { controls: React.RefObject<OrbitControlsImpl |
     const intro = overview && mode === 'overview' && !introComplete;
     const views = entryCameraPositions(aspect);
     const lunar = lunarLocation(focusedId);
-    const destination = overview ? (solarExploring ? views.explore : views.close) : lunar ? {x:0,y:.65,z:Math.max(11.8,8.2/aspect)} : focusedId === 'earth' ? { x: -2.5, y: 1, z: 10.5 } : focusedId === 'sun' ? { x: 0, y: .6, z: Math.max(12,14/aspect) } : { x: 0, y: 2, z: 16 };
-    const target = focusedId === 'earth' ? { x: -1.5, y: 0, z: 0 } : { x: 0, y: 0, z: 0 };
+    const destination = overview ? (solarExploring ? views.explore : views.close) : mode==='works'?{x:-1.8,y:aspect<.75?8:7,z:aspect<.75?24:17}: lunar ? {x:0,y:.65,z:Math.max(11.8,8.2/aspect)} : focusedId === 'earth' ? { x: -2.5, y: 1, z: 10.5 } : focusedId === 'sun' ? { x: 0, y: .6, z: Math.max(12,14/aspect) } : { x: 0, y: 2, z: 16 };
+    const target = mode==='works'?{x:-2.2,y:aspect<.75?-3:0,z:0}:focusedId === 'earth' ? { x: -1.5, y: 0, z: 0 } : { x: 0, y: 0, z: 0 };
     let disposed = false;
     const enable = () => { control.enabled = true; if (!disposed) patch({ flying: false }); };
     const finish = () => {
@@ -176,6 +177,7 @@ function SolarSystem() {
   const reduced=useUniverse(s=>s.reducedMotion);
   useFrame((_,delta)=>{if(!reduced)days.current+=Math.min(delta,.1)*SOLAR_DAYS_PER_SECOND;},-3);
   return <group>
+    <Fleet overview/>
     <Billboard><mesh renderOrder={-1}><planeGeometry args={[15,15]}/><shaderMaterial transparent depthWrite={false} blending={THREE.AdditiveBlending} vertexShader={`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`} fragmentShader={`varying vec2 vUv;void main(){float r=length(vUv-.5)*2.;float glow=exp(-r*8.)*.55*(1.-smoothstep(.6,1.,r));gl_FragColor=vec4(1.,.55,.15,glow);}`}/></mesh></Billboard>
     <Planet node={nodeById.sun} position={[0,0,0]} radius={1.8} solar quiet/>
     {solarBodies.map(body=><group key={body.nodeId}>
@@ -213,6 +215,7 @@ function CelestialSystem() {
   const focus=useUniverse(s=>s.focusedId), year=useUniverse(s=>s.year);
   const node=nodeById[focus]??nodeById.universe;
   if(focus==='universe')return <SolarSystem/>;
+  if(focus==='works')return <Fleet/>;
   if(focus==='earth')return <EarthSystem/>;
   const lunar=lunarLocation(focus);
   if(lunar)return lunar.level===0?<LunarSurface/>:null;

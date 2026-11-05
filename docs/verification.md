@@ -82,3 +82,9 @@ Only source inspection was performed. Tests, type checking, shader compilation, 
 ## Compact facility overview — source update only
 
 Removed the facility overview header and its status strip, moved Moon surface return inside the drawing, and cropped the SVG from y=77 so the first rooms at y=102 have one 25-unit grid cell of upper space. Updated HTML hit regions to the cropped SVG coordinates. The overview fits both available height and width using a sized layout container, with a viewport fallback; mobile uses compact labels. Moon landing title is now My Knowledge & Skills with a plain-language introduction. Existing browser selectors were updated without execution. No tests, type checks, builds, preview or browser commands were run; out/ remains unchanged.
+
+## My Works fleet — source update only
+
+Added three detailed code-native vessels to the solar map and a dedicated works scene: flagship, research vessel, communications vessel. Selectable geometry and HTML labels route to a portfolio introduction or one of two clearly unfilled project slots. Bounded drift supports reduced motion, decorative lights use basic materials, and high-detail greebles are omitted on low quality. Added a static /works/ entry, validated ship query selection, accessible project dock, search entries, navigation ordering and responsive camera/panel layout. Works state is kept outside the physical planet/content tree, leaving orbital and lunar relationships intact.
+
+Added state/data test definitions and browser test definitions for overview entry, project switching, mobile and navigation order. No tests, type checks, compilation, browser, build or preview commands were run. Source was inspected only. out/ remains unchanged and runtime/visual verification is left to the user. jp-sns-mvp is untouched.
