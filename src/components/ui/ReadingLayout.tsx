@@ -1,0 +1,3 @@
+import Link from 'next/link';
+import { Orbit } from 'lucide-react';
+export default function ReadingLayout({eyebrow,title,description,children}:{eyebrow:string;title:string;description:string;children:React.ReactNode}){return <main className="reading-page"><header className="reading-header"><Link href="/" className="reading-brand"><Orbit size={24} strokeWidth={1}/> MY UNIVERSE</Link><Link href="/">返回宇宙 ↗</Link></header><span className="eyebrow">{eyebrow}</span><h1>{title}</h1><p className="reading-lead">{description}</p><p className="reading-demo">当前为设计演示版本。故事、日期与旅行均为示例，不代表网站主人的真实经历。</p>{children}<footer className="reading-bottom"><Link href="/knowledge/">知识与成长</Link>　 /　<Link href="/stories/">情绪与人生</Link>　 /　<Link href="/travels/">旅行地球</Link></footer></main>;}
