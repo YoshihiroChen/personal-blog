@@ -102,3 +102,11 @@ npm run build
 Knowledge now opens a large Moon with two landing sites, Technology and Languages. `/planets/knowledge/` and the Knowledge navigation item both open the same lunar surface. Choosing a base directly opens a detailed top-down facility plan: Technology has Frontend, Backend, Cloud, Databases and AI chambers; Languages has four communications chambers. Chambers lead to workstations, including React → Next.js. Public field notes open in a central reading dialog. Breadcrumbs, Step back and Quick Find support direct navigation, including existing `?node=...` links. Moon field notes and the standalone `/knowledge/` text archive remain available.
 
 The Moon has no orbiting content planets. The facility uses lightweight SVG/HTML and the background switches to demand rendering indoors. Mobile supports scrolling within the floor plan. Code and test definitions are saved; tests, type checking, build and preview are left for the user to run manually.
+
+### Lunar surface detail and floating floor plans
+
+Facility plans now float directly over the star field, with no enclosing card, border or opaque deck background. The Moon uses a locally generated, cached regolith/relief texture: broad dark maria, hundreds of crater bowls, raised rims and occasional central peaks. Relief gradients perturb the lighting normals, with reduced edge glow and closer-view geometry detail. This is an artistic procedural surface rather than a geographic lunar survey. No remote image download or new dependency is required.
+
+Both landing sites now have three-dimensional facilities aligned to the lunar surface: terraced foundations, habitats, solar arrays, observation domes, antennas, airlocks and landing pads. The Languages base includes a communications dish. Models and labels both enter their respective base; hovering highlights the landing area. Per user preference, changes are saved without running tests, builds or services.
+
+The lunar landing page is titled **My Knowledge & Skills**. Facility overviews omit the large title/description block, place the Moon surface return button inside the plan, and fit the full facility to the available width and height. The drawing starts one grid cell above the first chamber row; mobile uses compact room labels rather than requiring a horizontal pan. Workstation pages retain their individual headings.

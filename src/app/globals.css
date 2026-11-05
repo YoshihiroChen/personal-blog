@@ -103,13 +103,13 @@ a.planet-label em strong{display:block;margin-top:8px;font-size:10px;color:#e8c8
 .lunar-beacon-card>span{font-size:9px;color:#ceb892;margin-top:4px}
 .lunar-beacon:is(:hover,:focus-visible) .lunar-beacon-card{border-color:var(--beacon-color);background:#1b2a3af5}
 .lunar-beacon:is(:hover,:focus-visible) .lunar-beacon-pin{box-shadow:0 0 28px #bad9ed80}
-.lunar-base-deck{height:calc(100% - 50px);display:flex;flex-direction:column;pointer-events:auto;border:1px solid #a5b9ce28;border-radius:10px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#182636e8,#0a111cf7 65%);box-shadow:0 24px 100px #0005}
-.lunar-base-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 32px 18px;border-bottom:1px solid #c4d3dd15;flex-shrink:0}
+.lunar-base-deck{height:calc(100% - 50px);display:flex;flex-direction:column;pointer-events:auto;border:0;border-radius:0;overflow:hidden;background:none;box-shadow:none}
+.lunar-base-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 0 18px;border-bottom:0;flex-shrink:0}
 .lunar-base-header .eyebrow{font-size:8px;letter-spacing:2px;color:var(--base-accent)}
 .lunar-base-header h1{font-family:var(--serif);font-size:32px;line-height:1.2;font-weight:400;letter-spacing:-.5px;margin:10px 0}
 .lunar-base-header p{font-size:11px;color:#7f93a7;margin:0;line-height:1.8}
 .lunar-map-scroll{flex:1;min-height:0;overflow:auto;scrollbar-width:thin;scrollbar-color:#3e5268 transparent}
-.base-plan{position:relative;width:100%;max-width:1000px;min-width:700px;aspect-ratio:1000/680;margin:0 auto;color:var(--base-accent)}
+.base-plan{position:relative;width:100%;max-width:1000px;min-width:700px;aspect-ratio:1000/603;margin:0 auto;color:var(--base-accent)}
 .base-blueprint{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .base-survey{fill:none;stroke:#8197a136;stroke-width:.8;stroke-dasharray:3 8}
 .base-survey text{fill:#75899d;font-size:9px;letter-spacing:1.5px;stroke:none}
@@ -130,9 +130,9 @@ a.planet-label em strong{display:block;margin-top:8px;font-size:10px;color:#e8c8
 .chamber-caption{font-size:9px;color:#849bad;letter-spacing:.2px}
 .chamber-arrow{position:absolute;right:17px;top:17px;color:#8faabd;opacity:.6}
 .base-chamber:hover .chamber-arrow{opacity:1;color:#f0d4a7}
-.lunar-deck-footer{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 28px;border-top:1px solid #c4d3dd15;font-size:8px;letter-spacing:1.3px;color:#708398;flex-shrink:0}
+.lunar-deck-footer{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 0;border-top:0;font-size:8px;letter-spacing:1.3px;color:#708398;flex-shrink:0}
 .lunar-deck-footer>span:first-child{display:flex;gap:9px;align-items:center;color:#9bb0bf}
-.lunar-workroom{flex:1;min-height:0;overflow:auto;position:relative;padding:28px 6% 40px;background-image:linear-gradient(#92adbe06 1px,transparent 1px),linear-gradient(90deg,#92adbe06 1px,transparent 1px);background-size:30px 30px;scrollbar-width:thin;scrollbar-color:#3e5268 transparent}
+.lunar-workroom{flex:1;min-height:0;overflow:auto;position:relative;padding:28px 6% 40px;background:transparent;scrollbar-width:thin;scrollbar-color:#3e5268 transparent}
 .workroom-door{display:flex;align-items:center;justify-content:center;gap:12px;font-size:8px;letter-spacing:2px;color:#71899d;margin-bottom:26px}
 .workroom-door>span{height:5px;width:55px;border:1px solid #8fa9bc50;background:repeating-linear-gradient(120deg,#96b0c438 0 2px,transparent 2px 8px)}
 .workroom-overview{max-width:680px;margin:0 auto 24px;text-align:center}
@@ -176,3 +176,24 @@ a.planet-label em strong{display:block;margin-top:8px;font-size:10px;color:#e8c8
 .lunar-surface-caption button:hover{color:#f2d9b3}
 .lunar-map-tip{display:none}
 @media(max-width:700px){.lunar-surface-caption{gap:6px;font-size:5px;letter-spacing:.9px}.lunar-surface-caption button{font-size:7px;margin-left:6px}.lunar-map-tip{display:block;font-size:9px;color:#b8a78d;margin-top:6px}}
+
+/* Facility drawings float over the same star field, without an enclosing card. */
+.lunar-base-header,.lunar-deck-footer{background:transparent}
+.base-room-shell{fill:#101c2be0}
+.base-hub{fill:#142434c7}
+.base-blueprint{filter:drop-shadow(0 8px 16px #0005)}
+.facility-label{transform:translate(70%,-22%);padding:4px}
+.facility-label .lunar-beacon-card{min-width:125px;padding:9px 12px;background:linear-gradient(135deg,#172536e0,#09101bdf);gap:5px;border-left-width:1px}
+.facility-label .lunar-beacon-card strong{font-size:13px}
+.facility-label .lunar-beacon-card em{display:none}
+.facility-label .lunar-beacon-card>span{font-size:8px;margin-top:2px}
+.facility-label.facility-hovered .lunar-beacon-card,.facility-label:hover .lunar-beacon-card{border-color:var(--beacon-color);background:#1b2a3aed}
+.facility-label.facility-hovered .lunar-beacon-card em,.facility-label:hover .lunar-beacon-card em{display:block}
+@media(max-width:700px){.lunar-base-header{padding-left:0;padding-right:0}.lunar-deck-footer{padding-left:0;padding-right:0}.facility-label{transform:translate(48%,-36%)}.facility-label .lunar-beacon-card{min-width:100px;padding:7px 9px}.facility-label .lunar-beacon-card strong{font-size:11px}.facility-label .lunar-beacon-card small{font-size:6px}.facility-label .lunar-beacon-card em{display:none!important}}
+
+/* Fit the entire facility into the available scene; one grid cell above the rooms. */
+.is-floorplan .lunar-map-scroll{display:grid;place-items:center;overflow:hidden;container-type:size}
+.is-floorplan .base-plan{min-width:0;max-width:1100px;width:min(100%,calc((100svh - 230px) * 1.658375));aspect-ratio:1000/603}
+@supports(width:1cqh){.is-floorplan .base-plan{width:min(100%,calc(100cqh * 1.658375))}}
+.base-plan .lunar-map-return{position:absolute;left:11%;bottom:4%;z-index:2;max-width:28%;font-size:10px;padding:8px 10px;gap:6px;background:#0b1422ad}
+@media(max-width:700px){.is-floorplan .base-chamber{padding:5px 7px;border-radius:5px}.is-floorplan .chamber-code{font-size:5px;letter-spacing:.5px;gap:5px}.is-floorplan .chamber-code .chamber-light{width:3px;height:3px}.is-floorplan .base-chamber strong{font-size:11px;line-height:1.2;margin:4px 0;max-width:100%}.is-floorplan .chamber-caption{font-size:6px;letter-spacing:0}.is-floorplan .chamber-arrow{width:9px;height:9px;right:5px;top:5px}.base-plan .lunar-map-return{font-size:8px;padding:6px;gap:4px}.base-plan .lunar-map-return svg{width:10px;height:10px}}

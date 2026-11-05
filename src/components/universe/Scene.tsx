@@ -6,6 +6,8 @@ import * as THREE from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import gsap from 'gsap';
 import { planetHref } from '@/lib/planets';
+import { moonSurfaceTexture } from '@/lib/moon-surface';
+import LunarBase from './LunarBase';
 import { lunarBases, lunarLocation } from '@/lib/lunar';
 import { canvasPointer } from '@/lib/pointer';
 import { useUniverse } from '@/stores/universe';
@@ -115,10 +117,12 @@ function Planet({ node, position, radius, label=true, central=false, solar=false
   const explore=useUniverse(s=>s.explore), year=useUniverse(s=>s.year), quality=useUniverse(s=>s.quality), reduced=useUniverse(s=>s.reducedMotion), placeId=useUniverse(s=>s.selectedPlaceId);
   const earthMode=useUniverse(s=>s.focusedId==='earth');
   const onMoonSurface=useUniverse(s=>s.focusedId==='knowledge');
+  const moonMap=useMemo(()=>node.themeId==='moon'?moonSurfaceTexture(quality==='low'):null,[node.themeId,quality]);
   const isFuture=!solar&&(node.since??0)>year;
-  const uniforms=useMemo(()=>({uDetail:{value:quality==='high'?5:quality==='low'?2:3},uSunView:{value:new THREE.Vector3()},uSolarLight:{value:solar?1:0},uTime:{value:0},uOpacity:{value:isFuture?.28:1},uKind:{value:node.themeId==='earth' && !textures?1:theme.kind},uColor:{value:new THREE.Color(theme.color)},uGlow:{value:new THREE.Color(theme.light)},uDay:{value:textures?.day??null},uNight:{value:textures?.night??null}}),[theme,node.themeId,textures,isFuture,solar,quality]);
+  const uniforms=useMemo(()=>({uMoonSurface:{value:moonMap},uMoonTexel:{value:new THREE.Vector2(1/(quality==='low'?512:1024),1/(quality==='low'?256:512))},uDetail:{value:quality==='high'?5:quality==='low'?2:3},uSunView:{value:new THREE.Vector3()},uSolarLight:{value:solar||(node.themeId==='moon'&&onMoonSurface)?1:0},uTime:{value:0},uOpacity:{value:isFuture?.28:1},uKind:{value:node.themeId==='earth' && !textures?1:theme.kind},uColor:{value:new THREE.Color(theme.color)},uGlow:{value:new THREE.Color(theme.light)},uDay:{value:textures?.day??null},uNight:{value:textures?.night??null}}),[theme,node.themeId,textures,isFuture,solar,quality,moonMap,onMoonSurface]);
   useFrame((state,delta)=>{
     if(solar)uniforms.uSunView.value.set(0,0,0).applyMatrix4(state.camera.matrixWorldInverse);
+    else if(node.themeId==='moon'&&onMoonSurface)uniforms.uSunView.value.set(-700,600,900).applyMatrix4(state.camera.matrixWorldInverse);
     if(shader.current&&!reduced)shader.current.uniforms.uTime.value=state.clock.elapsedTime;
     if(!surface.current)return;
     if(node.themeId==='earth') {
@@ -130,7 +134,7 @@ function Planet({ node, position, radius, label=true, central=false, solar=false
     if(group.current){const scale=hovered&&!central?1.06:1;group.current.scale.lerp(new THREE.Vector3(scale,scale,scale),reduced?1:Math.min(1,delta*8));}
   }, -1);
   const click=(event:ThreeEvent<MouseEvent>)=>{event.stopPropagation();if(!central)openPlanet();};
-  const segments=quality==='low'?32:quality==='high'?96:64;
+  const segments=node.themeId==='moon'&&onMoonSurface?(quality==='low'?64:112):quality==='low'?32:quality==='high'?96:64;
   const enter=(event:ThreeEvent<PointerEvent>)=>{if(central)return;event.stopPropagation();setHovered(true);document.body.style.cursor='pointer';};
   const leave=()=>{setHovered(false);document.body.style.cursor='auto';};
   return <group position={position} ref={group} onClick={click} onPointerOver={enter} onPointerOut={leave}>
@@ -197,19 +201,14 @@ function EarthSystem() {
   </group>;
 }
 function LunarSurface() {
-  const explore=useUniverse(s=>s.explore);
   return <group>
+    <ambientLight intensity={.65}/>
+    <directionalLight position={[-7,6,9]} intensity={2.5} color="#f4e6cf"/>
     <Planet node={nodeById.knowledge} position={[0,0,0]} radius={3.8} central label={false}/>
-    {lunarBases.map(base=><group key={base.id} position={base.position}>
-      <Html center occlude wrapperClass="lunar-beacon-anchor" style={{pointerEvents:'none'}} zIndexRange={[18,0]}>
-        <button className="lunar-beacon" style={{'--beacon-color':base.accent} as React.CSSProperties} onClick={()=>explore(base.id)} aria-label={`Enter ${base.name} base`}>
-          <span className="lunar-beacon-pin" aria-hidden="true"><span/></span>
-          <span className="lunar-beacon-card"><small>BASE / {base.code}</small><strong>{base.name}</strong><em>{base.subtitle}</em><span>Enter base ↗</span></span>
-        </button>
-      </Html>
-    </group>)}
+    {lunarBases.map(base=><LunarBase key={base.id} base={base}/>)}
   </group>;
 }
+
 function CelestialSystem() {
   const focus=useUniverse(s=>s.focusedId), year=useUniverse(s=>s.year);
   const node=nodeById[focus]??nodeById.universe;

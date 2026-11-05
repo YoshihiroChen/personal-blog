@@ -21,10 +21,10 @@ function Equipment({ x, y, variant }: { x: number; y: number; variant: number })
   </g>;
 }
 function BasePlan({ baseId }: { baseId: string }) {
-  const { explore } = useUniverse();
+  const { explore, back } = useUniverse();
   const rooms = nodeById[baseId].children ?? [];
-  return <div className="base-plan" aria-label="Base floor plan">
-    <svg viewBox="0 0 1000 680" className="base-blueprint" aria-hidden="true">
+  return <div className="base-plan" role="region" aria-label={`${nodeById[baseId].name} base floor plan`}>
+    <svg viewBox="0 77 1000 603" className="base-blueprint" aria-hidden="true">
       <defs><pattern id="lunar-grid" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M25 0H0V25" fill="none" stroke="currentColor" strokeWidth=".4"/></pattern></defs>
       <rect x="12" y="12" width="976" height="656" fill="url(#lunar-grid)" opacity=".22"/>
       <g className="base-survey"><circle cx="500" cy="340" r="295"/><circle cx="500" cy="340" r="230"/><path d="M500 26v50m0 528v50M26 340h50m848 0h50M50 50h30m-15-15v30m870-15h-30m15-15v30"/></g>
@@ -39,16 +39,17 @@ function BasePlan({ baseId }: { baseId: string }) {
           <path d={`M${p.x * 10 + p.w * 10 - 26} ${p.y * 6.8 + 22}v28m-6-28v28`}/>
         </g>;
       })}
-      <g className="base-survey"><text x="36" y="640">LUNAR SURFACE / PLAN VIEW</text><text x="840" y="55">N ↑</text><path d="M800 630h150m-150-5v10m75-10v10m75-10v10"/><text x="800" y="618">SCHEMATIC / NOT TO SCALE</text></g>
+      <g className="base-survey"><text x="36" y="670">LUNAR SURFACE / PLAN VIEW</text><text x="945" y="100">N ↑</text><path d="M800 630h150m-150-5v10m75-10v10m75-10v10"/><text x="800" y="618">SCHEMATIC / NOT TO SCALE</text></g>
     </svg>
     {rooms.map((room, i) => {
       const p = chamberPositions[i];
-      return <button key={room.id} className="base-chamber" style={{ left: `${p.x}%`, top: `${p.y}%`, width: `${p.w}%`, height: `${p.h}%` }} onClick={() => explore(room.id)} aria-label={`Explore ${room.name} chamber`}>
+      return <button key={room.id} className="base-chamber" style={{ left: `${p.x}%`, top: `${(p.y * 6.8 - 77) / 603 * 100}%`, width: `${p.w}%`, height: `${p.h * 6.8 / 603 * 100}%` }} onClick={() => explore(room.id)} aria-label={`Explore ${room.name} chamber`}>
         <span className="chamber-code">{baseId === 'it' ? 'LAB' : 'COMMS'} / 0{i + 1}<span className="chamber-light"/></span>
-        <strong>{room.name}</strong><span className="chamber-caption">{room.children?.length ?? 0} {room.children?.length ? 'workstations' : 'field records'}</span>
+        <strong>{room.id==='ai'?'AI':room.id==='cloud'?'Cloud':room.name}</strong><span className="chamber-caption">{room.children?.length ?? 0} {room.children?.length ? 'workstations' : 'field records'}</span>
         <ArrowUpRight size={17} className="chamber-arrow"/>
       </button>;
     })}
+    <button className="lunar-back lunar-map-return" onClick={back}><ArrowLeft size={14}/> Moon surface</button>
   </div>;
 }
 function Workroom({ id }: { id: string }) {
@@ -107,13 +108,13 @@ export default function LunarExplorer({ onSearch }: { onSearch: () => void }) {
   return <section className={`lunar-explorer ${level === 0 ? 'on-surface' : 'inside-base'}`} aria-label="Lunar knowledge explorer" style={{ '--base-accent': base?.accent ?? '#b9cfda' } as CSSProperties}>
     <div className="lunar-topbar"><nav aria-label="Lunar exploration path"><button onClick={() => navigate('overview')}>Universe</button>{trail.map((step, i) => <span key={step.id}><ChevronRight size={12}/><button aria-current={i === trail.length - 1 ? 'page' : undefined} onClick={() => explore(step.id)}>{step.id === 'knowledge' ? 'Moon' : step.name}</button></span>)}</nav><button className="lunar-find" onClick={onSearch}><Search size={14}/> Quick Find</button></div>
     {level === 0 ? <>
-      <div className="lunar-surface-heading"><span className="eyebrow">KNOWLEDGE & GROWTH / LUNAR SURFACE</span><h1>A place to keep exploring.</h1><p>Choose a base on the Moon.<br/>Every landing opens a different line of discovery.</p></div>
+      <div className="lunar-surface-heading"><span className="eyebrow">KNOWLEDGE & GROWTH / LUNAR SURFACE</span><h1>My Knowledge & Skills</h1><p>Explore my learning notes and skills.<br/>Choose Technology or Languages to get started.</p></div>
       <div className="lunar-landing-strip"><span><ScanLine size={14}/> SELECT A LANDING SITE</span>{lunarBases.map(site => <button key={site.id} onClick={() => explore(site.id)}>{site.id === 'it' ? <Cpu size={16}/> : <Globe2 size={16}/>}<span><small>BASE / {site.code}</small>{site.name}</span><ArrowUpRight size={15}/></button>)}</div>
       <div className="lunar-surface-caption"><Radio size={13}/> TWO BASES. ONE OPEN NOTEBOOK.<span>Drag to orbit · Select a landing beacon</span>{surfaceNotes[0]&&<button onClick={()=>patch({activeStoryId:surfaceNotes[0].id})}>Open lunar field note ↗</button>}</div>
-    </> : <div className="lunar-base-deck" key={base?.id}>
-      <header className="lunar-base-header"><div><span className="eyebrow">MOON / {base?.id === 'it' ? 'RESEARCH FACILITY' : 'COMMUNICATIONS FACILITY'}</span><h1>{level === 1 ? `${base?.name} Base` : node.name}</h1><p>{level === 1 ? 'A view from above. Choose a chamber to begin.' : 'Explore the workstations, one idea at a time.'}{level===1&&<span className="lunar-map-tip">Swipe across the plan to find every chamber.</span>}</p></div><button className="lunar-back" onClick={back}><ArrowLeft size={14}/>{level === 1 ? 'Moon surface' : 'Step back'}</button></header>
+    </> : <div className={`lunar-base-deck ${level===1?'is-floorplan':'is-workroom'}`} key={base?.id}>
+      {level>1&&<header className="lunar-base-header"><div><span className="eyebrow">MOON / {base?.id === 'it' ? 'RESEARCH FACILITY' : 'COMMUNICATIONS FACILITY'}</span><h1>{node.name}</h1><p>Explore the workstations, one idea at a time.</p></div><button className="lunar-back" onClick={back}><ArrowLeft size={14}/> Step back</button></header>}
       {level === 1 && base ? <div className="lunar-map-scroll"><BasePlan baseId={base.id}/></div> : <Workroom id={focusedId}/>}
-      <div className="lunar-deck-footer"><span><span className="chamber-light"/> {base?.name.toUpperCase()} / {level === 1 ? 'FACILITY OVERVIEW' : 'WORKSTATION VIEW'}</span><span>Choose a room. Follow your curiosity.</span></div>
+      {level>1&&<div className="lunar-deck-footer"><span><span className="chamber-light"/> {base?.name.toUpperCase()} / WORKSTATION VIEW</span><span>Choose a room. Follow your curiosity.</span></div>}
     </div>}
     <FieldNote/>
   </section>;

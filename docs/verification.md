@@ -70,3 +70,15 @@ ENTRY_PAUSE_SECONDS 从 0.8 改为 0，场景就绪后立即启动原有 2.2 秒
 - Base selection immediately opens a detailed SVG floor plan. Technology has five chambers; Languages has four. Chambers lead to workstations and nested stations; public notes open centrally with focus trapping, Escape handling and focus restoration.
 - Added breadcrumbs, level-by-level return, Quick Find, surface field-note access and mobile floor-plan scrolling. Internal scenes use demand rendering; no new textures, dependencies, server processes or services.
 - Updated existing browser test definitions and added lunar navigation tests. Per user instruction, no tests, type checks, compilation, build, browser or preview commands were run. Output in out/ is unchanged. Visual appearance and runtime behaviour await manual verification.
+
+## Floating facilities and lunar relief — source update only
+
+Removed the enclosing facility deck card/background and kept individual chambers floating over the star field. Added cached 512×256 / 1024×512 RGBA lunar surface maps (albedo + relief), spherical crater placement and shader normal perturbation for crater walls, rims and basin contrast; close-up Moon tessellation is increased. Lunar lighting follows the scene light direction when the camera orbits. No remote texture requests or dependencies.
+
+Added two surface-aligned 3D facilities with independent building/panel details, visible infrastructure, communications equipment, landing pads, clickable geometry, hover outlines and compact identifying labels. Cursor resets on facility unmount. Existing floor-plan and workbench navigation is unchanged.
+
+Only source inspection was performed. Tests, type checking, shader compilation, browser rendering, build and preview were not run, as requested by the user. Appearance, GPU shader compatibility and picking await manual verification; out/ is unchanged. jp-sns-mvp is untouched.
+
+## Compact facility overview — source update only
+
+Removed the facility overview header and its status strip, moved Moon surface return inside the drawing, and cropped the SVG from y=77 so the first rooms at y=102 have one 25-unit grid cell of upper space. Updated HTML hit regions to the cropped SVG coordinates. The overview fits both available height and width using a sized layout container, with a viewport fallback; mobile uses compact labels. Moon landing title is now My Knowledge & Skills with a plain-language introduction. Existing browser selectors were updated without execution. No tests, type checks, builds, preview or browser commands were run; out/ remains unchanged.

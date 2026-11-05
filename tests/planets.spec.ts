@@ -38,7 +38,7 @@ test('start exploration keeps the solar system and every celestial body has a pa
   await page.reload();
   await expect(page.getByRole('heading', { name: 'A little about me' })).toBeVisible();
   await page.goto('/planets/knowledge/');
-  await expect(page.getByRole('heading', { name: 'A place to keep exploring.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'My Knowledge & Skills' })).toBeVisible();
   await expect(page.locator('.lunar-landing-strip button')).toHaveCount(2);
 });
 

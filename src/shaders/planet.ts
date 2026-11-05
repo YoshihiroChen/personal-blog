@@ -16,6 +16,8 @@ uniform vec3 uSunView;
 uniform float uSolarLight;
 uniform sampler2D uDay;
 uniform sampler2D uNight;
+uniform sampler2D uMoonSurface;
+uniform vec2 uMoonTexel;
 varying vec3 vNormal;
 varying vec3 vPosition;
 varying vec2 vUv;
@@ -28,7 +30,8 @@ void main(){
  float light=dot(n,lightDirection);
  float day=smoothstep(-.15,.7,light);
  vec3 p=vec3(vUv*vec2(14.,7.),1.);
- float terrain=fbm(p*2.5),fine=fbm(p*12.);
+ float terrain=0.,fine=0.;
+ if(uKind<5.5){terrain=fbm(p*2.5);fine=fbm(p*12.);}
  vec3 base=uColor*(.4+terrain*.85+fine*.3);
  vec3 emission=vec3(0.);
  if(uKind>.5&&uKind<1.5){
@@ -61,13 +64,25 @@ void main(){
   base=vec3(0.);
  }
  if(uKind>5.5){
-  float maria=smoothstep(.33,.65,fbm(p*1.4));
-  float craters=pow(1.-abs(sin(fine*80.)),10.);
-  base=mix(vec3(.23,.24,.25),uColor,maria)*(.78+fine*.45)-craters*.045;
+  vec4 regolith=texture2D(uMoonSurface,vUv);
+  // Build view-space tangents from the sphere's UVs, then light the crater relief.
+  vec3 q0=dFdx(vPosition),q1=dFdy(vPosition);
+  vec2 st0=dFdx(vUv),st1=dFdy(vUv);
+  vec3 q1perp=cross(q1,n),q0perp=cross(n,q0);
+  vec3 tangent=q1perp*st0.x+q0perp*st1.x;
+  vec3 bitangent=q1perp*st0.y+q0perp*st1.y;
+  float inverseScale=inversesqrt(max(max(dot(tangent,tangent),dot(bitangent,bitangent)),.000001));
+  float dhdu=(texture2D(uMoonSurface,vUv+vec2(uMoonTexel.x,0.)).a-texture2D(uMoonSurface,vUv-vec2(uMoonTexel.x,0.)).a)/(2.*uMoonTexel.x);
+  float dhdv=(texture2D(uMoonSurface,vUv+vec2(0.,uMoonTexel.y)).a-texture2D(uMoonSurface,vUv-vec2(0.,uMoonTexel.y)).a)/(2.*uMoonTexel.y);
+  n=normalize(n-(tangent*dhdu+bitangent*dhdv)*inverseScale*.045);
+  light=dot(n,lightDirection);
+  day=smoothstep(-.12,.8,light);
+  base=regolith.rgb;
  }
+
  float rim=pow(1.-max(0.,dot(n,viewDir)),4.);
  vec3 color=base*(.045+day*.98)+emission;
- color+=uGlow*rim*.2*smoothstep(-.3,.8,light);
+ color+=uGlow*rim*(uKind>5.5?.025:.2)*smoothstep(-.3,.8,light);
  gl_FragColor=vec4(color,uOpacity);
  #include <tonemapping_fragment>
  #include <colorspace_fragment>

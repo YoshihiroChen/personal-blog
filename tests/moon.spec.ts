@@ -5,11 +5,11 @@ test('Moon bases lead to chambers, workstations, notes, and back to the surface'
   page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/planets/knowledge/');
-  await expect(page.getByRole('heading', { name: 'A place to keep exploring.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'My Knowledge & Skills' })).toBeVisible();
   await expect(page.locator('.planet-label')).toHaveCount(0);
   await expect(page.locator('.story-panel')).toHaveCount(0);
   await page.locator('.lunar-landing-strip').getByRole('button', { name: /Technology/ }).click();
-  await expect(page.getByRole('heading', { name: 'Technology Base' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Technology base floor plan' })).toBeVisible();
   await expect(page.locator('.base-chamber')).toHaveCount(5);
   await page.getByRole('button', { name: 'Explore Frontend chamber' }).click();
   await page.getByRole('button', { name: /DESK.*React/ }).click();
@@ -28,9 +28,9 @@ test('Moon bases lead to chambers, workstations, notes, and back to the surface'
   await expect(note).toHaveCount(0);
   await expect(page.locator('.lunar-base-header h1')).toHaveText('Japanese');
   await page.getByRole('button', { name: 'Step back' }).click();
-  await expect(page.getByRole('heading', { name: 'Languages Base' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Languages base floor plan' })).toBeVisible();
   await page.getByRole('button', { name: 'Moon surface' }).click();
-  await expect(page.getByRole('heading', { name: 'A place to keep exploring.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'My Knowledge & Skills' })).toBeVisible();
   expect(errors).toEqual([]);
 });
 

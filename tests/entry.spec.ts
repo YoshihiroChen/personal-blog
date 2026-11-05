@@ -23,6 +23,6 @@ test('reduced motion and direct celestial links skip the entrance', async ({ pag
   await page.goto('/');
   await expect(page.locator('.hero')).toBeVisible();
   await page.goto('/?node=knowledge');
-  await expect(page.getByRole('heading', { name: 'A place to keep exploring.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'My Knowledge & Skills' })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible();
 });
