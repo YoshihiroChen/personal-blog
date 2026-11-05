@@ -9,7 +9,7 @@ import { stories } from '../data/stories';
 import { places,visits } from '../data/travels';
 test('dates preserve unknown precision and year ranges',()=>{
   assert.equal(dateLabel({precision:'year',value:'2020'}),'2020');
-  assert.equal(dateLabel({precision:'unknown'}),'日期待补充');
+  assert.equal(dateLabel({precision:'unknown'}),'Date to come');
   assert.equal(dateLabel({precision:'year',value:'2018',end:'2020'}),'2018 — 2020');
   assert.equal(visibleInYear({precision:'month',value:'2025-11'},2024),false);
   assert.equal(visibleInYear({precision:'month',value:'2025-11'},2025),true);

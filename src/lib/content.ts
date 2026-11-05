@@ -1,6 +1,6 @@
 import type { StoryDate } from '@/types/universe';
 export function dateLabel(date: StoryDate): string {
-  if (date.precision === 'unknown') return '日期待补充';
+  if (date.precision === 'unknown') return 'Date to come';
   return date.end ? `${date.value} — ${date.end}` : date.value;
 }
 export function visibleInYear(date: StoryDate, year: number): boolean { return date.precision === 'unknown' || Number(date.value.slice(0, 4)) <= year; }

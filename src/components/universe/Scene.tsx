@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import gsap from 'gsap';
 import { planetHref } from '@/lib/planets';
+import { lunarBases, lunarLocation } from '@/lib/lunar';
 import { canvasPointer } from '@/lib/pointer';
 import { useUniverse } from '@/stores/universe';
 import { nodeById, themes } from '@/data/universe';
@@ -51,7 +52,8 @@ function CameraRig({ controls }: { controls: React.RefObject<OrbitControlsImpl |
     const overview = focusedId === 'universe';
     const intro = overview && mode === 'overview' && !introComplete;
     const views = entryCameraPositions(aspect);
-    const destination = overview ? (solarExploring ? views.explore : views.close) : focusedId === 'earth' ? { x: -2.5, y: 1, z: 10.5 } : focusedId === 'sun' ? { x: 0, y: .6, z: Math.max(12,14/aspect) } : { x: 0, y: 2, z: 16 };
+    const lunar = lunarLocation(focusedId);
+    const destination = overview ? (solarExploring ? views.explore : views.close) : lunar ? {x:0,y:.65,z:Math.max(11.8,8.2/aspect)} : focusedId === 'earth' ? { x: -2.5, y: 1, z: 10.5 } : focusedId === 'sun' ? { x: 0, y: .6, z: Math.max(12,14/aspect) } : { x: 0, y: 2, z: 16 };
     const target = focusedId === 'earth' ? { x: -1.5, y: 0, z: 0 } : { x: 0, y: 0, z: 0 };
     let disposed = false;
     const enable = () => { control.enabled = true; if (!disposed) patch({ flying: false }); };
@@ -67,7 +69,7 @@ function CameraRig({ controls }: { controls: React.RefObject<OrbitControlsImpl |
     };
     const alreadyThere = camera.position.distanceToSquared(new THREE.Vector3(destination.x, destination.y, destination.z)) < 1e-6
       && control.target.distanceToSquared(new THREE.Vector3(target.x, target.y, target.z)) < 1e-6;
-    if (reducedMotion || (!intro && alreadyThere)) {
+    if (reducedMotion || (lunar && lunar.level > 0) || (!intro && alreadyThere)) {
       settle();
       return;
     }
@@ -112,6 +114,7 @@ function Planet({ node, position, radius, label=true, central=false, solar=false
   const theme=themes[node.themeId];
   const explore=useUniverse(s=>s.explore), year=useUniverse(s=>s.year), quality=useUniverse(s=>s.quality), reduced=useUniverse(s=>s.reducedMotion), placeId=useUniverse(s=>s.selectedPlaceId);
   const earthMode=useUniverse(s=>s.focusedId==='earth');
+  const onMoonSurface=useUniverse(s=>s.focusedId==='knowledge');
   const isFuture=!solar&&(node.since??0)>year;
   const uniforms=useMemo(()=>({uDetail:{value:quality==='high'?5:quality==='low'?2:3},uSunView:{value:new THREE.Vector3()},uSolarLight:{value:solar?1:0},uTime:{value:0},uOpacity:{value:isFuture?.28:1},uKind:{value:node.themeId==='earth' && !textures?1:theme.kind},uColor:{value:new THREE.Color(theme.color)},uGlow:{value:new THREE.Color(theme.light)},uDay:{value:textures?.day??null},uNight:{value:textures?.night??null}}),[theme,node.themeId,textures,isFuture,solar,quality]);
   useFrame((state,delta)=>{
@@ -123,7 +126,7 @@ function Planet({ node, position, radius, label=true, central=false, solar=false
       const target=new THREE.Quaternion().setFromEuler(new THREE.Euler(...(selected?earthFocusRotation(selected.latitude,selected.longitude):[.12,-Math.PI*1.25,0] as [number,number,number])));
       if(earthMode)surface.current.quaternion.slerp(target,reduced?1:Math.min(1,delta*2));
       else if(!reduced)surface.current.rotation.y+=delta*.025;
-    } else if(!reduced)surface.current.rotation.y+=delta*(node.visual?.rotationSpeed??.028);
+    } else if(!reduced&&!(node.themeId==='moon'&&onMoonSurface))surface.current.rotation.y+=delta*(node.visual?.rotationSpeed??.028);
     if(group.current){const scale=hovered&&!central?1.06:1;group.current.scale.lerp(new THREE.Vector3(scale,scale,scale),reduced?1:Math.min(1,delta*8));}
   }, -1);
   const click=(event:ThreeEvent<MouseEvent>)=>{event.stopPropagation();if(!central)openPlanet();};
@@ -146,7 +149,7 @@ function Planet({ node, position, radius, label=true, central=false, solar=false
     {node.visual?.rings&&<group rotation={[1.13,.24,-.3]}>
       {[{inner:1.35,outer:1.7,opacity:.32},{inner:1.73,outer:1.94,opacity:.55},{inner:1.97,outer:2.25,opacity:.25}].map((r,i)=><mesh key={i}><ringGeometry args={[radius*r.inner,radius*r.outer,quality==='low'?80:160]}/><shaderMaterial side={THREE.DoubleSide} transparent depthWrite={false} uniforms={{uRingColor:{value:new THREE.Color(theme.light)},uRadius:{value:radius},uAlpha:{value:r.opacity}}} vertexShader={`varying vec3 vLocal;void main(){vLocal=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`} fragmentShader={`varying vec3 vLocal;uniform vec3 uRingColor;uniform float uRadius;uniform float uAlpha;void main(){float r=length(vLocal.xy)/uRadius;float bands=.5+.25*sin(r*215.)+.15*sin(r*463.);float shadow=.35+.65*smoothstep(-.8,.3,normalize(vLocal).x);gl_FragColor=vec4(uRingColor*(.4+bands*.55)*shadow,uAlpha*(.35+bands*.65));}`}/></mesh>)}
     </group>}
-    {label&&<Html position={[0,-radius*(node.visual?.rings?1.8:1.35)-.35,0]} center distanceFactor={solar?undefined:23} wrapperClass="planet-label-anchor" style={{pointerEvents:'none'}} zIndexRange={[15,0]}>{solar?<a href={planetHref(node.id)} className={`planet-label ${quiet?'quiet':''} ${hovered?'hovered':''}`} aria-label={`探索${node.name}`} onPointerEnter={()=>{setHovered(true);document.body.style.cursor='pointer';}} onPointerLeave={leave} onFocus={()=>setHovered(true)} onBlur={leave}><span>{node.name}</span><small>{theme.label}</small><em>{node.description}<strong>点击进入 →</strong></em></a>:<button className={`planet-label ${quiet?'quiet':''} ${hovered?'hovered':''} ${isFuture?'future':''}`} onClick={()=>explore(node.id)}><span>{node.name}</span><small>{isFuture?'未来坐标':theme.label}</small>{hovered&&<em>{node.description}</em>}</button>}</Html>}
+    {label&&<Html position={[0,-radius*(node.visual?.rings?1.8:1.35)-.35,0]} center distanceFactor={solar?undefined:23} wrapperClass="planet-label-anchor" style={{pointerEvents:'none'}} zIndexRange={[15,0]}>{solar?<a href={planetHref(node.id)} className={`planet-label ${quiet?'quiet':''} ${hovered?'hovered':''}`} aria-label={`Explore ${node.name}`} onPointerEnter={()=>{setHovered(true);document.body.style.cursor='pointer';}} onPointerLeave={leave} onFocus={()=>setHovered(true)} onBlur={leave}><span>{node.name}</span><small>{theme.label}</small><em>{node.description}<strong>Step inside →</strong></em></a>:<button className={`planet-label ${quiet?'quiet':''} ${hovered?'hovered':''} ${isFuture?'future':''}`} onClick={()=>explore(node.id)}><span>{node.name}</span><small>{isFuture?'Up ahead':theme.label}</small>{hovered&&<em>{node.description}</em>}</button>}</Html>}
   </group>;
 }
 function Orbit({ radius }: { radius: number }) {
@@ -193,14 +196,30 @@ function EarthSystem() {
     <MovingBody orbit={localMoonOrbit} days={days}><Planet node={nodeById.knowledge} position={[0,0,0]} radius={.45}/></MovingBody>
   </group>;
 }
+function LunarSurface() {
+  const explore=useUniverse(s=>s.explore);
+  return <group>
+    <Planet node={nodeById.knowledge} position={[0,0,0]} radius={3.8} central label={false}/>
+    {lunarBases.map(base=><group key={base.id} position={base.position}>
+      <Html center occlude wrapperClass="lunar-beacon-anchor" style={{pointerEvents:'none'}} zIndexRange={[18,0]}>
+        <button className="lunar-beacon" style={{'--beacon-color':base.accent} as React.CSSProperties} onClick={()=>explore(base.id)} aria-label={`Enter ${base.name} base`}>
+          <span className="lunar-beacon-pin" aria-hidden="true"><span/></span>
+          <span className="lunar-beacon-card"><small>BASE / {base.code}</small><strong>{base.name}</strong><em>{base.subtitle}</em><span>Enter base ↗</span></span>
+        </button>
+      </Html>
+    </group>)}
+  </group>;
+}
 function CelestialSystem() {
   const focus=useUniverse(s=>s.focusedId), year=useUniverse(s=>s.year);
   const node=nodeById[focus]??nodeById.universe;
   if(focus==='universe')return <SolarSystem/>;
   if(focus==='earth')return <EarthSystem/>;
-  if(focus==='sun')return <group position={[-3,0,0]}>
-    <Billboard><mesh raycast={ignoreOrbitRaycast}><planeGeometry args={[10,10]}/><shaderMaterial transparent depthWrite={false} blending={THREE.AdditiveBlending} vertexShader={`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`} fragmentShader={`varying vec2 vUv;void main(){float r=length(vUv-.5)*2.;float glow=exp(-r*7.)*.5*(1.-smoothstep(.6,1.,r));gl_FragColor=vec4(1.,.55,.15,glow);}`}/></mesh></Billboard>
-    <Planet node={nodeById.sun} position={[0,0,0]} radius={1.85} central label={false}/>
+  const lunar=lunarLocation(focus);
+  if(lunar)return lunar.level===0?<LunarSurface/>:null;
+  if(focus==='sun')return <group position={[-3.7,0,0]}>
+    <Billboard><mesh raycast={ignoreOrbitRaycast}><planeGeometry args={[7,7]}/><shaderMaterial transparent depthWrite={false} blending={THREE.AdditiveBlending} vertexShader={`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`} fragmentShader={`varying vec2 vUv;void main(){float r=length(vUv-.5)*2.;float glow=exp(-r*7.)*.5*(1.-smoothstep(.6,1.,r));gl_FragColor=vec4(1.,.55,.15,glow);}`}/></mesh></Billboard>
+    <Planet node={nodeById.sun} position={[0,0,0]} radius={1.25} central label={false}/>
   </group>;
   const isRegion=node.type==='region';
   const children=node.children??[];
@@ -212,19 +231,20 @@ function CelestialSystem() {
       const r=isRegion?7:5.8;
       return <Planet key={child.id} node={child} position={[Math.cos(angle)*r-1.5,Math.sin(angle)*r*.56,Math.sin(angle)*1.2-1]} radius={isRegion?(child.visual?.radius??1):Math.min(child.visual?.radius??.85,1.15)}/>;
     })}
-    {node.since&&node.since>year&&<Html position={[-1.5,-3.5,0]} center><span className="future-note">尚未抵达的未来 · {node.since}</span></Html>}
+    {node.since&&node.since>year&&<Html position={[-1.5,-3.5,0]} center><span className="future-note">Still to come · {node.since}</span></Html>}
   </group>;
 }
 export default function UniverseScene({ onError }: { onError: () => void }) {
   const quality=useUniverse(s=>s.quality), reduced=useUniverse(s=>s.reducedMotion);
   const controls=useRef<OrbitControlsImpl>(null);
+  const lunar=useUniverse(s=>lunarLocation(s.focusedId)?.level??-1);
   useEffect(()=>()=>{document.body.style.cursor='auto';},[]);
   // Canvas always mounts its HTML fallback, even when WebGL works. Keep it passive;
   // renderer errors reach SceneBoundary and context loss uses the listener below.
   return <Canvas events={state=>({...events(state),compute:(event,state)=>{
     const point=canvasPointer(event.clientX,event.clientY,state.gl.domElement.getBoundingClientRect());
     state.pointer.set(point.x,point.y);state.raycaster.setFromCamera(state.pointer,state.camera);
-  }})} frameloop={reduced?'demand':'always'} camera={{position:[0,45,64],fov:42,near:.1,far:900}} dpr={[1,quality==='high'?2:quality==='low'?1:1.5]} gl={{antialias:quality!=='low',alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.domElement.addEventListener('webglcontextlost',onError,{once:true});}} fallback={<span>你的浏览器暂不支持画布，请通过目录探索内容。</span>}>
+  }})} frameloop={reduced||lunar>0?'demand':'always'} camera={{position:[0,45,64],fov:42,near:.1,far:900}} dpr={[1,quality==='high'?2:quality==='low'?1:1.5]} gl={{antialias:quality!=='low',alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.domElement.addEventListener('webglcontextlost',onError,{once:true});}} fallback={<span>Canvas is unavailable in this browser. Use the navigation to explore.</span>}>
     <Starfield/>
     <Suspense fallback={null}><CelestialSystem/></Suspense>
     <OrbitControls ref={controls} enablePan={false} enableDamping dampingFactor={.065} minDistance={6} maxDistance={350} maxPolarAngle={Math.PI*.85} minPolarAngle={Math.PI*.12} rotateSpeed={.4} zoomSpeed={.6}/>

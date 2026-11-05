@@ -92,3 +92,13 @@ npm run build
 首页点击「开始探索」后保持太阳系视图，镜头从入场终点再靠近 50%，收起左侧介绍，让位给星球选择。太阳、八大行星、冥王星与月球的实体和名称均可点击，前往 `/planets/[id]/` 独立页面。页面支持静态导出、刷新与分享；太阳 `/planets/sun/` 是自我介绍入口，真实简介和联系方式尚待填写。月球继续链接知识档案，地球继续链接旅行档案。首页下方增加星球目录，方便触屏和键盘访问，也可以找到近景画面之外的星球。
 
 星球页面最新布局：`/planets/earth/` 直接显示旅行地球三维场景；情绪星球 URL 显示情绪世界及对应档案；`/planets/sun/` 左侧显示较小太阳，右侧为自我介绍。月球保留知识阅读页。
+
+### 当前界面文案与验证方式
+
+界面及示例内容已统一英文；首页采用 Welcome to my universe. / I’m Jiahong Chen.，移除装饰脚注、页脚及下方目录。Explore 右侧为 About Me，太阳页左侧使用较小太阳、右侧介绍卡片占桌面视口 54%。测试、构建、预览均由用户手动执行，代理修改代码后不自动运行这些命令。
+
+### Lunar Knowledge Explorer
+
+Knowledge now opens a large Moon with two landing sites, Technology and Languages. `/planets/knowledge/` and the Knowledge navigation item both open the same lunar surface. Choosing a base directly opens a detailed top-down facility plan: Technology has Frontend, Backend, Cloud, Databases and AI chambers; Languages has four communications chambers. Chambers lead to workstations, including React → Next.js. Public field notes open in a central reading dialog. Breadcrumbs, Step back and Quick Find support direct navigation, including existing `?node=...` links. Moon field notes and the standalone `/knowledge/` text archive remain available.
+
+The Moon has no orbiting content planets. The facility uses lightweight SVG/HTML and the background switches to demand rendering indoors. Mobile supports scrolling within the floor plan. Code and test definitions are saved; tests, type checking, build and preview are left for the user to run manually.

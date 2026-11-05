@@ -46,3 +46,133 @@ a.planet-label em strong{display:block;margin-top:8px;font-size:10px;color:#e8c8
 .profile-sections a{display:block;margin-top:12px;font-size:11px;color:#d5b98e}
 .sun-view .year-control{display:none}
 @media(max-width:600px){.sun-view .story-panel{inset:calc(max(760px,100svh) - 335px) 5% auto;width:90%;max-width:90%;max-height:265px}.profile-sections p{font-size:11px}}
+
+/* A single, uncluttered scene; the archive and scene footer have been removed. */
+.universe-app{min-height:max(700px,100svh)}
+.hero{max-width:520px}
+.hero h1{font-size:clamp(42px,4.4vw,70px);line-height:1.12;letter-spacing:-2px;font-weight:400;margin:24px 0}
+.hero-description{font-size:14px;line-height:1.9;letter-spacing:0;max-width:420px}
+.hero-name{color:#e8e2d8;font-size:18px}
+.hero-eyebrow{font-size:9px;letter-spacing:2px}
+.brand small{letter-spacing:1.1px;font-size:8px}
+.main-nav button{letter-spacing:0;white-space:nowrap}
+.main-nav button:last-child{display:block}
+.sun-view .story-panel{width:54vw;max-width:none;right:4.1%;top:145px;max-height:calc(100svh - 185px);padding:36px 40px}
+.sun-view .story-panel h2{font-size:clamp(28px,3vw,46px);letter-spacing:-1px;line-height:1.2;margin:20px 0}
+.sun-view .panel-description{font-size:15px;line-height:1.9;letter-spacing:0;max-width:620px}
+.sun-view .section-heading{display:none}
+.sun-view .profile-sections h3{font-size:15px;letter-spacing:0}
+.sun-view .profile-sections p{font-size:14px;line-height:1.9;max-width:620px}
+@media(max-width:900px){.main-nav{gap:16px;overflow-x:auto;justify-content:flex-start;scrollbar-width:none}.main-nav button{flex-shrink:0;font-size:11px;min-height:42px}.hero h1{font-size:48px}.sun-view .story-panel{padding:26px}}
+@media(max-width:600px){.universe-app{min-height:max(760px,100svh)}.hero{left:7%;max-width:86%}.hero h1{font-size:42px;letter-spacing:-1.5px}.hero-description{font-size:12px;max-width:300px}.hero-description br:last-of-type{display:none}.hero-name{font-size:16px}.hero-eyebrow{font-size:7px;letter-spacing:1.2px}.brand small{font-size:6px;letter-spacing:.8px}.main-nav{gap:20px;justify-content:flex-start}.sun-view .story-panel{inset:calc(max(760px,100svh) * .48) 5% auto;width:90%;max-width:90%;max-height:calc(max(760px,100svh) * .48);padding:24px}.sun-view .story-panel h2{font-size:28px}.sun-view .panel-description,.sun-view .profile-sections p{font-size:12px}}
+
+/* Lunar surface and research facilities: quiet materials, precise architectural detail. */
+.knowledge-view .section-heading,.knowledge-view .year-control{display:none}
+.lunar-explorer{position:absolute;inset:130px 4.1% 24px;z-index:6;pointer-events:none;color:#c6d2de;--base-accent:#b9cfda}
+.lunar-explorer button,.lunar-explorer a{pointer-events:auto}
+.lunar-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:34px;margin-bottom:16px}
+.lunar-topbar nav{display:flex;align-items:center;gap:10px;overflow-x:auto;scrollbar-width:none;white-space:nowrap;font-size:11px;max-width:80%}
+.lunar-topbar nav>span{display:flex;align-items:center;gap:10px}
+.lunar-topbar nav svg{color:#5b6b7b;flex-shrink:0}
+.lunar-topbar nav button{padding:6px 0;color:#7c8da0;font-size:11px}
+.lunar-topbar nav button:hover,.lunar-topbar nav [aria-current=page]{color:#e1caa8}
+.lunar-find,.lunar-back{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:11px;color:#a8bac9;white-space:nowrap;border:1px solid #a7bac024;padding:9px 12px;border-radius:4px;background:#0b1422b8}
+.lunar-find:hover,.lunar-back:hover{color:#e5d2b4;border-color:#cfb78b60}
+.lunar-surface-heading{position:absolute;top:65px;left:2%;max-width:290px}
+.lunar-surface-heading .eyebrow{font-size:8px;color:#b8a890;letter-spacing:1.8px}
+.lunar-surface-heading h1{font-family:var(--serif);font-weight:400;line-height:1.25;font-size:36px;letter-spacing:-.6px;margin:18px 0}
+.lunar-surface-heading p{font-size:12px;line-height:1.9;color:#8b9bae;max-width:260px}
+.lunar-surface-caption{position:absolute;bottom:7px;left:2%;display:flex;align-items:center;gap:9px;font-size:8px;letter-spacing:2px;color:#b3a58f}
+.lunar-surface-caption>span{color:#75869a;letter-spacing:.3px;margin-left:15px}
+.lunar-landing-strip{position:absolute;right:0;bottom:0;display:flex;align-items:center;gap:12px}
+.lunar-landing-strip>span{display:flex;gap:8px;align-items:center;color:#6f8196;font-size:8px;letter-spacing:1.2px;max-width:130px;line-height:1.8}
+.lunar-landing-strip button{border:1px solid #c2cbd124;background:#0a111dce;border-radius:5px;display:flex;align-items:center;gap:12px;padding:12px 15px;color:#bdc9d6;font-size:12px;text-align:left}
+.lunar-landing-strip button>span{display:flex;flex-direction:column;gap:5px}
+.lunar-landing-strip small{font-size:7px;letter-spacing:1.5px;color:#7c8a9c}
+.lunar-landing-strip button:hover{border-color:#cdb38b90;background:#182232ee}
+.lunar-beacon-anchor{pointer-events:none}
+.lunar-beacon{display:flex;align-items:center;gap:13px;pointer-events:auto;text-align:left;padding:8px;color:#cdd9e1;border-radius:8px}
+.lunar-beacon-pin{display:grid;place-items:center;position:relative;width:28px;height:28px;border:1px solid var(--beacon-color);border-radius:50%;box-shadow:0 0 20px #b1cbda30;background:#0a1420b8;flex-shrink:0}
+.lunar-beacon-pin:before,.lunar-beacon-pin:after{content:'';position:absolute;background:var(--beacon-color);opacity:.75}
+.lunar-beacon-pin:before{width:40px;height:1px}.lunar-beacon-pin:after{width:1px;height:40px}
+.lunar-beacon-pin>span{width:7px;height:7px;border-radius:50%;background:#e3e8e8;box-shadow:0 0 12px var(--beacon-color);z-index:1}
+.lunar-beacon-card{display:flex;flex-direction:column;gap:7px;padding:13px 16px;min-width:175px;background:linear-gradient(135deg,#162130ed,#09101aeb);border:1px solid #b8cad44a;border-left:2px solid var(--beacon-color);border-radius:4px;box-shadow:0 10px 35px #0005;transition:background .2s,border-color .2s}
+.lunar-beacon-card small{font-size:8px;color:var(--beacon-color);letter-spacing:2px}
+.lunar-beacon-card strong{font-size:16px;font-weight:400;letter-spacing:.2px}
+.lunar-beacon-card em{font-size:9px;color:#95a4b6;font-style:normal;white-space:nowrap}
+.lunar-beacon-card>span{font-size:9px;color:#ceb892;margin-top:4px}
+.lunar-beacon:is(:hover,:focus-visible) .lunar-beacon-card{border-color:var(--beacon-color);background:#1b2a3af5}
+.lunar-beacon:is(:hover,:focus-visible) .lunar-beacon-pin{box-shadow:0 0 28px #bad9ed80}
+.lunar-base-deck{height:calc(100% - 50px);display:flex;flex-direction:column;pointer-events:auto;border:1px solid #a5b9ce28;border-radius:10px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#182636e8,#0a111cf7 65%);box-shadow:0 24px 100px #0005}
+.lunar-base-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 32px 18px;border-bottom:1px solid #c4d3dd15;flex-shrink:0}
+.lunar-base-header .eyebrow{font-size:8px;letter-spacing:2px;color:var(--base-accent)}
+.lunar-base-header h1{font-family:var(--serif);font-size:32px;line-height:1.2;font-weight:400;letter-spacing:-.5px;margin:10px 0}
+.lunar-base-header p{font-size:11px;color:#7f93a7;margin:0;line-height:1.8}
+.lunar-map-scroll{flex:1;min-height:0;overflow:auto;scrollbar-width:thin;scrollbar-color:#3e5268 transparent}
+.base-plan{position:relative;width:100%;max-width:1000px;min-width:700px;aspect-ratio:1000/680;margin:0 auto;color:var(--base-accent)}
+.base-blueprint{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.base-survey{fill:none;stroke:#8197a136;stroke-width:.8;stroke-dasharray:3 8}
+.base-survey text{fill:#75899d;font-size:9px;letter-spacing:1.5px;stroke:none}
+.base-corridors>path:first-child{fill:none;stroke:#71869840;stroke-width:35;stroke-linejoin:round}
+.base-corridors .corridor-centre{fill:none;stroke:#a2b6c663;stroke-width:1;stroke-dasharray:5 6}
+.base-hub{stroke:#a2bac37a;fill:#182736;stroke-width:1}
+.base-hub circle{fill:none;stroke:#b8c8cd8a}
+.base-hub text{stroke:none;fill:#8b9dab;font-size:9px;letter-spacing:2px;text-anchor:middle}
+.base-room-shell{fill:#111e2c;stroke:#9fb8c06e;stroke-width:1.5}
+.base-room-shell .room-inner-wall{fill:none;stroke:#9fb8c026;stroke-width:1}
+.base-equipment{fill:#1b3041;stroke:#9cb8c95c;stroke-width:1}
+.base-equipment circle{fill:#bed5d5;stroke:none}
+.base-chamber{position:absolute;display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:17px 20px;border:1px solid transparent;border-radius:12px;transition:background .2s,border-color .2s,box-shadow .2s}
+.base-chamber:hover,.base-chamber:focus-visible{background:#9ab9d214;border-color:var(--base-accent);box-shadow:inset 0 0 28px #9ab9d20c,0 0 25px #9ab9d212}
+.chamber-code{display:flex;align-items:center;gap:10px;font-size:8px;letter-spacing:1.7px;color:#8ca5b9}
+.chamber-light{display:inline-block;height:4px;width:4px;border-radius:50%;background:#bdcdbb;box-shadow:0 0 8px #bdcdbb60;flex-shrink:0}
+.base-chamber strong{font-size:clamp(12px,1.5vw,20px);font-weight:400;color:#dae1e7;margin:10px 0 7px;max-width:95%;line-height:1.3}
+.chamber-caption{font-size:9px;color:#849bad;letter-spacing:.2px}
+.chamber-arrow{position:absolute;right:17px;top:17px;color:#8faabd;opacity:.6}
+.base-chamber:hover .chamber-arrow{opacity:1;color:#f0d4a7}
+.lunar-deck-footer{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 28px;border-top:1px solid #c4d3dd15;font-size:8px;letter-spacing:1.3px;color:#708398;flex-shrink:0}
+.lunar-deck-footer>span:first-child{display:flex;gap:9px;align-items:center;color:#9bb0bf}
+.lunar-workroom{flex:1;min-height:0;overflow:auto;position:relative;padding:28px 6% 40px;background-image:linear-gradient(#92adbe06 1px,transparent 1px),linear-gradient(90deg,#92adbe06 1px,transparent 1px);background-size:30px 30px;scrollbar-width:thin;scrollbar-color:#3e5268 transparent}
+.workroom-door{display:flex;align-items:center;justify-content:center;gap:12px;font-size:8px;letter-spacing:2px;color:#71899d;margin-bottom:26px}
+.workroom-door>span{height:5px;width:55px;border:1px solid #8fa9bc50;background:repeating-linear-gradient(120deg,#96b0c438 0 2px,transparent 2px 8px)}
+.workroom-overview{max-width:680px;margin:0 auto 24px;text-align:center}
+.workroom-overview .eyebrow{color:var(--base-accent);font-size:8px}
+.workroom-overview h2{font-family:var(--serif);font-size:30px;font-weight:400;letter-spacing:-.5px;margin:12px 0}
+.workroom-overview p{font-size:12px;line-height:1.9;color:#879eb3}
+.workstation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:860px;margin:30px auto}
+.lunar-workstation{position:relative;display:flex;flex-direction:column;align-items:center;min-height:190px;padding:18px 18px 22px;border:1px solid #9db8c33d;border-radius:6px;background:linear-gradient(155deg,#223346b3,#101b28ed);box-shadow:0 7px 0 #060d16,0 8px 0 #9db8c32a;transition:border-color .2s,background .2s}
+.lunar-workstation:before,.lunar-workstation:after{content:'';position:absolute;width:5px;height:5px;border:1px solid #9bb5c14a;top:8px;border-radius:50%}
+.lunar-workstation:before{left:8px}.lunar-workstation:after{right:8px}
+.lunar-workstation:hover,.lunar-workstation:focus-visible{border-color:var(--base-accent);background:linear-gradient(155deg,#30495ed4,#142231)}
+.station-number{align-self:flex-start;font-size:7px;color:#7f9aad;letter-spacing:1.7px}
+.station-monitor{position:relative;width:70px;height:43px;border:2px solid #68849980;background:#071522;border-radius:3px;margin:20px 0 15px;padding:8px}
+.station-monitor:after{content:'';position:absolute;bottom:-8px;left:22px;width:24px;height:6px;border-bottom:2px solid #7790a5;border-left:1px solid #7790a5;border-right:1px solid #7790a5}
+.station-monitor>span{display:block;width:75%;height:2px;background:var(--base-accent);opacity:.5;margin-bottom:4px}.station-monitor>span:nth-child(2){width:45%}.station-monitor>span:nth-child(3){width:60%}
+.lunar-workstation strong{font-size:15px;font-weight:400;color:#d4dfe6;text-align:center;line-height:1.4}
+.lunar-workstation small{font-size:9px;color:#8ba2b6;margin-top:8px}
+.lunar-workstation>svg{position:absolute;bottom:16px;right:14px;color:#8caabb}
+.lunar-records{max-width:860px;margin:35px auto 0;border-top:1px solid #a5bdcd26;padding-top:20px}
+.lunar-records h3{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:400;color:#b8c9d5;margin:0 0 16px}
+.lunar-records h3>span{margin-left:auto;font-size:9px;color:#70899d}
+.lunar-records>p{font-size:11px;line-height:1.9;color:#788fa4}
+.lunar-records>button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:25px;text-align:left;padding:18px 20px;border:1px solid #b5c8ce26;border-radius:4px;background:#16243490}
+.lunar-records>button+button{margin-top:12px}.lunar-records>button:hover{border-color:#ceb68b80}
+.lunar-records>button>span{display:flex;flex-direction:column;gap:9px}
+.lunar-records time{font-size:8px;letter-spacing:1.5px;color:#bda98e}
+.lunar-records strong{font-size:16px;font-weight:400;color:#d5dfe6}
+.lunar-records small{font-size:11px;line-height:1.8;color:#8199af}
+.lunar-note-backdrop{position:fixed;inset:0;z-index:65;pointer-events:auto;display:flex;align-items:center;justify-content:center;padding:30px;background:#03070ede;backdrop-filter:blur(12px)}
+.lunar-note{position:relative;width:760px;max-width:100%;max-height:85svh;overflow:auto;padding:48px 55px;border-radius:8px;scrollbar-width:thin;scrollbar-color:#3e5268 transparent}
+.lunar-note-close{position:absolute;top:18px;right:18px}
+.lunar-note h2{font-family:var(--serif);font-weight:400;font-size:34px;letter-spacing:-.7px;line-height:1.3;margin:20px 0 12px}
+.lunar-note-subtitle{font-family:var(--serif);font-style:italic;font-size:16px;color:#8da2b5;line-height:1.7}
+.lunar-note>a{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:#d7bf98;margin-top:18px}
+@media(min-width:1600px){.lunar-surface-heading{max-width:340px}.lunar-surface-heading h1{font-size:44px}.base-plan{max-width:1100px}}
+@media(max-width:1100px){.lunar-surface-heading{max-width:230px}.lunar-surface-heading h1{font-size:29px}.lunar-surface-caption>span{display:none}.lunar-landing-strip>span{display:none}.lunar-base-header{padding:20px 24px}.base-chamber{padding:14px 16px}.base-chamber strong{font-size:16px}}
+@media(max-width:700px){.lunar-explorer{inset:140px 5% 18px}.lunar-topbar{gap:10px}.lunar-topbar nav{max-width:72%;gap:5px}.lunar-topbar nav>span{gap:5px}.lunar-topbar nav button{font-size:9px}.lunar-find{font-size:9px;padding:8px;gap:5px}.lunar-surface-heading{top:56px;left:1%;max-width:260px}.lunar-surface-heading h1{font-size:28px;margin:12px 0}.lunar-surface-heading .eyebrow{font-size:6px;letter-spacing:1.3px}.lunar-surface-heading p{font-size:10px;max-width:230px}.lunar-landing-strip{bottom:26px;left:0;right:0;justify-content:center;gap:10px}.lunar-landing-strip button{padding:11px 12px;gap:10px;flex:1;justify-content:center;font-size:11px}.lunar-surface-caption{bottom:0;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:6px;letter-spacing:1.4px}.lunar-beacon{gap:8px;padding:5px}.lunar-beacon-card{min-width:125px;padding:10px 12px;gap:5px}.lunar-beacon-card strong{font-size:13px}.lunar-beacon-card small{font-size:7px}.lunar-beacon-card em{display:none}.lunar-beacon-card>span{font-size:8px}.lunar-beacon-pin{width:20px;height:20px}.lunar-beacon-pin:before{width:28px}.lunar-beacon-pin:after{height:28px}.lunar-base-header{padding:17px 18px;gap:12px}.lunar-base-header h1{font-size:26px}.lunar-base-header .eyebrow{font-size:6px;letter-spacing:1.1px}.lunar-base-header p{font-size:10px;max-width:210px}.lunar-back{font-size:9px;padding:8px;gap:5px}.lunar-deck-footer{padding:12px 18px;font-size:7px}.lunar-deck-footer>span:last-child{display:none}.lunar-workroom{padding:24px 18px 30px}.workroom-overview h2{font-size:27px}.workroom-overview p{font-size:11px}.workstation-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:24px auto}.lunar-workstation{min-height:175px;padding:15px 12px 22px}.lunar-workstation strong{font-size:13px}.lunar-workstation small{font-size:8px}.lunar-records strong{font-size:14px}.lunar-note-backdrop{padding:15px}.lunar-note{padding:45px 25px 30px;max-height:88svh}.lunar-note h2{font-size:28px}.lunar-note .story-prose p{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.lunar-beacon-card,.base-chamber,.lunar-workstation{transition:none}}
+
+.lunar-surface-caption button{font-size:9px;color:#cdb68e;letter-spacing:0;margin-left:8px;padding:7px 0;white-space:nowrap}
+.lunar-surface-caption button:hover{color:#f2d9b3}
+.lunar-map-tip{display:none}
+@media(max-width:700px){.lunar-surface-caption{gap:6px;font-size:5px;letter-spacing:.9px}.lunar-surface-caption button{font-size:7px;margin-left:6px}.lunar-map-tip{display:block;font-size:9px;color:#b8a78d;margin-top:6px}}

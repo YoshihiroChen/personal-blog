@@ -58,3 +58,15 @@
 ## 入场取消等待（已构建）
 
 ENTRY_PAUSE_SECONDS 从 0.8 改为 0，场景就绪后立即启动原有 2.2 秒镜头推进。16 项轻量测试、数据校验、生产构建及其 TypeScript 检查通过。构建采样 RSS 峰值 464 MiB，最低可用内存 1360 MiB；out/ 同时包含上一节的地球、太阳及情绪世界布局。未运行服务器浏览器测试。
+
+## 英文文案与界面精简（源码更新，交由用户验证）
+
+首页改为 Welcome to my universe. / I’m Jiahong Chen.；全站界面、星球数据、知识树、旅行与示例故事、无障碍标签及元数据统一为英文，HTML lang=en。移除首页脚注、装饰性坐标、好奇心标注、TIME COORDINATE 文本、场景页脚与 A MAP OF MY UNIVERSE 以下的全部目录；阅读页页脚一并移除。导航的 About Me 紧邻 Explore，直接进入太阳页并可重新打开介绍。太阳半径从 1.85 调整为 1.25，右侧介绍卡片桌面端宽度 54vw，手机保留底部卡片。修正文案重复展示，并同步更新现有测试选择器与日期断言。仅做源码阅读及文本扫描，按用户要求未运行 npm test、类型检查、构建、浏览器或启动服务；out/ 未更新。
+
+## Lunar bases and floor plans — source update only
+
+- Replaced orbiting knowledge children with a radius-3.8 Moon, two surface beacons, accessible landing buttons and responsive close framing. The Moon surface remains stationary while camera orbit is available.
+- `/planets/knowledge/`, the Knowledge navigation item and existing deep links share one explorer. All descendants of knowledge bypass the old orbit/planet renderer and right-hand story directory.
+- Base selection immediately opens a detailed SVG floor plan. Technology has five chambers; Languages has four. Chambers lead to workstations and nested stations; public notes open centrally with focus trapping, Escape handling and focus restoration.
+- Added breadcrumbs, level-by-level return, Quick Find, surface field-note access and mobile floor-plan scrolling. Internal scenes use demand rendering; no new textures, dependencies, server processes or services.
+- Updated existing browser test definitions and added lunar navigation tests. Per user instruction, no tests, type checks, compilation, build, browser or preview commands were run. Output in out/ is unchanged. Visual appearance and runtime behaviour await manual verification.
