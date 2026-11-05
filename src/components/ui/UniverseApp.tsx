@@ -1,5 +1,6 @@
 'use client';
 import dynamic from 'next/dynamic';
+import AboutProfile from '@/components/ui/AboutProfile';
 import WorksExplorer from '@/components/ui/WorksExplorer';
 import { fleetShips, isFleetShipId, type FleetShipId } from '@/data/works';
 import LunarExplorer from '@/components/ui/LunarExplorer';
@@ -61,20 +62,14 @@ function StoryPanel() {
       <div className="related-links">{story.celestialNodeIds.map(id=><button className="text-button" key={id} onClick={()=>explore(id)}>{nodeById[id].name}<ChevronRight size={14}/></button>)}</div>
       {related.length>1&&<div className="story-pagination"><button disabled={storyIndex<=0} onClick={()=>patch({activeStoryId:related[storyIndex-1]?.id})}><ArrowLeft size={14}/> Previous</button><button disabled={storyIndex<0||storyIndex>=related.length-1} onClick={()=>patch({activeStoryId:related[storyIndex+1]?.id})}>Next <ArrowRight size={14}/></button></div>}
       <Link className="text-button permalink" href={`/stories/${story.id}/`}>Read full story <ArrowRight size={14}/></Link>
-    </>:node?.id==='sun'?<>
-      <span className="panel-kicker">THE SUN / ABOUT ME</span><h2>Hi, I’m Jiahong Chen.</h2>
-      <p className="panel-description">Welcome to my little corner of the internet. This is where I collect what I’m learning, the places that catch my eye, and the stories I want to keep.</p>
-      <div className="profile-sections"><section><h3>A little about me</h3><p>I’m Jiahong. I built this space as a personal home for my notes, interests, and experiences. There’s more to share as this universe takes shape.</p></section>
-      <section><h3>What you’ll find here</h3><p>Follow the Moon for learning notes, visit Earth for travel, or wander through the Inner Worlds for a different kind of story.</p><Link href="/planets/knowledge/">Browse my learning notes →</Link><Link href="/planets/earth/">Explore Travel Earth →</Link></section>
-      <section><h3>Get in touch</h3><p>Contact details are coming soon.</p></section></div>
-    </>:node?<>
+    </>:node?.id==='sun'?<AboutProfile/>:node?<>
       <div className="planet-emblem" style={{'--planet-color':themes[node.themeId].color} as React.CSSProperties}><Orbit size={27} strokeWidth={1}/></div>
       <span className="panel-kicker">{themes[node.themeId].label}</span><h2>{node.name}{node.english!==node.name&&<span>{node.english}</span>}</h2><p className="panel-description">{node.description}</p>
       {(node.since??0)>year&&<p className="future-note">Up ahead · {node.since}</p>}
       {node.children?.length?<div className="node-children"><h3>Keep exploring <span>{String(node.children.length).padStart(2,'0')}</span></h3>{node.children.map((child,i)=><button key={child.id} onClick={()=>explore(child.id)}><span className="list-number">{String(i+1).padStart(2,'0')}</span><span>{child.name}{child.english!==child.name&&<small>{child.english}</small>}</span><ArrowRight size={14}/></button>)}</div>:null}
       {node.id==='earth'&&<div className="node-children"><h3>Places on the map <span>DEMO</span></h3>{places.filter(p=>visits.some(v=>v.placeId===p.id&&v.status==='public'&&visibleInYear(v.visitedAt,year))).map(place=><button key={place.id} onClick={()=>patch({selectedPlaceId:place.id})}><Globe2 size={15}/><span>{place.name}<small>{place.english} · {place.country}</small></span><ArrowRight size={14}/></button>)}</div>}
       <div className="story-list"><h3>Stories from this world <span>{String(related.length).padStart(2,'0')}</span></h3>{related.length?related.map(story=><button key={story.id} onClick={()=>patch({activeStoryId:story.id})}><time>{dateLabel(story.date)}</time><span>{story.title}</span><ArrowRight size={14}/></button>):<p className="empty-note">A little space for a story still to come.</p>}</div>
-      <span className="demo-note">Sample content. Personal entries are coming soon.</span>
+      <span className="demo-note">Some entries are samples; personal notes are labelled separately.</span>
     </>:null}
   </aside>;
 }

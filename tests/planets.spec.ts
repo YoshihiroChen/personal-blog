@@ -34,9 +34,9 @@ test('start exploration keeps the solar system and every celestial body has a pa
   }
   await page.goto('/planets/sun/');
   await expect(page.getByRole('heading', { name: 'Hi, I’m Jiahong Chen.', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'A little about me' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Experience' })).toBeVisible();
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'A little about me' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Experience' })).toBeVisible();
   await page.goto('/planets/knowledge/');
   await expect(page.getByRole('heading', { name: 'My Knowledge & Skills' })).toBeVisible();
   await expect(page.locator('.lunar-landing-strip button')).toHaveCount(2);
@@ -52,5 +52,5 @@ test('Earth and emotional planets open their matching 3D worlds', async ({ page 
   await expect(page.getByRole('complementary').getByRole('heading', { name: /Mercury/ })).toBeVisible();
   await page.goto('/planets/sun/');
   await expect(page.locator('.sun-view canvas')).toBeVisible();
-  await expect(page.getByRole('complementary').getByRole('heading', { name: 'A little about me' })).toBeVisible();
+  await expect(page.getByRole('complementary').getByRole('heading', { name: 'Experience' })).toBeVisible();
 });

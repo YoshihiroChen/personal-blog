@@ -118,3 +118,13 @@ The solar map now includes three independently selectable vessels in a bounded f
 The My Works navigation item sits after Knowledge; Travel Earth now precedes Inner Worlds. `/works/` opens the flagship introduction; `/works/?ship=research` and `/works/?ship=communications` select a project slot directly. Clicking a ship in the overview enters the fleet scene and displays its content. A dock provides keyboard/touch selection, and search includes all three vessels. Existing planetary orbital data and knowledge hierarchy are unchanged. Actual project names, dates, technologies and links await user-provided details; the two slots explicitly say DETAILS COMING SOON.
 
 Code and test definitions are saved. Tests, type checks, builds and preview remain manual, as requested.
+
+### Fleet finish refinement
+
+Solar overview vessels no longer render any HTML explanation/name boxes; geometry hover and direct clicks remain, with My Works navigation available for keyboard access. The dedicated fleet scene retains its identifying controls. Both views use the same upgraded ship components and cached surface maps: armour seams, plate variation, recessed service covers, cooling slots, fasteners, subtle wear, hull serial stencils and individually patterned solar cells. Hull UVs are projected per face; packed relief/roughness/metalness maps provide lighting detail. Rivets are instanced, and low quality uses 256px maps and fewer small fittings (standard uses 512px). No external textures or dependencies were added. Manual verification is still required.
+
+### Expanded project fleet
+
+My Works now contains one flagship and seven project vessels: six IT projects (Rails job-hunting support, Next.js frontend learning platform, Next.js/FastAPI IT learning and bootcamp, Django financial service, RAG study assistant, distributed career-consultation booking) and the Japanese essay experience. Hover labels and selectors use project titles, with availability and project links in the details. The booking service is explicitly paused for hosting costs; Django is marked MVP in development.
+
+The solar map retains only the original three models as one interactive fleet icon: collective hover/glow/scale and a single My Works label/entry. Additional ships exist only in the works scene. Project models reuse the three existing hull/material families, with wider formation framing and a scrollable selection dock. About Me content was extracted into AboutProfile.tsx to simplify the main app JSX; existing personal content, including the user-edited School of International Studies name, is preserved.

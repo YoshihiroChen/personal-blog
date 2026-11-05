@@ -59,14 +59,14 @@ function Workroom({ id }: { id: string }) {
   const records = stories.filter(story => story.status === 'public' && story.celestialNodeIds.includes(id) && visibleInYear(story.date, year));
   return <section className="lunar-workroom" aria-label={`${node.name} workstations`}>
     <div className="workroom-door" aria-hidden="true"><span/> AIRLOCK / {node.name.toUpperCase()} <span/></div>
-    <div className="workroom-overview"><span className="eyebrow">{children.length ? 'CHOOSE A WORKSTATION' : 'RESEARCH STATION'}</span><h2>{node.name}</h2><p>{children.length ? 'Take a seat at a workbench. Follow a connection, or open a field note.' : node.description}</p></div>
+    <div className="workroom-overview"><span className="eyebrow">{children.length ? 'CHOOSE A WORKSTATION' : 'RESEARCH STATION'}</span><h2>{node.name}</h2><p>{node.description}</p></div>
     {children.length > 0 && <div className="workstation-grid">{children.map((child, i) => <button key={child.id} className="lunar-workstation" onClick={() => explore(child.id)}>
       <span className="station-number">DESK / {String(i + 1).padStart(2, '0')}</span>
       <span className="station-monitor" aria-hidden="true"><span/><span/><span/></span>
       <strong>{child.name}</strong><small>{child.children?.length ? `${child.children.length} connected station${child.children.length === 1 ? '' : 's'}` : 'Open station'}</small><ArrowUpRight size={16}/>
     </button>)}</div>}
     <div className="lunar-records"><h3><BookOpen size={14}/> Field notes <span>{String(records.length).padStart(2, '0')}</span></h3>
-      {records.length ? records.map(story => <button key={story.id} onClick={() => patch({ activeStoryId: story.id })}><span><time>{dateLabel(story.date)} / SAMPLE NOTE</time><strong>{story.title}</strong><small>{story.summary}</small></span><ArrowUpRight size={18}/></button>) : <p>No field notes here yet. This station is ready for future entries.</p>}
+      {records.length ? records.map(story => <button key={story.id} onClick={() => patch({ activeStoryId: story.id })}><span><time>{dateLabel(story.date)} / FIELD NOTE</time><strong>{story.title}</strong><small>{story.summary}</small></span><ArrowUpRight size={18}/></button>) : <p>No field notes here yet. This station is ready for future entries.</p>}
     </div>
   </section>;
 }
@@ -94,7 +94,7 @@ function FieldNote() {
       }
     }}>
       <button ref={closeRef} className="icon-button lunar-note-close" aria-label="Close field note" onClick={() => patch({ activeStoryId: null })}><X size={20}/></button>
-      <span className="eyebrow">FIELD NOTE / {dateLabel(story.date)}</span><h2>{story.title}</h2><p className="lunar-note-subtitle">{story.subtitle}</p><span className="demo-tag">Sample writing</span>
+      <span className="eyebrow">FIELD NOTE / {dateLabel(story.date)}</span><h2>{story.title}</h2><p className="lunar-note-subtitle">{story.subtitle}</p><span className="demo-tag">Personal note</span>
       <div className="story-prose">{story.paragraphs.map((paragraph, i) => <p key={i}>{paragraph}</p>)}</div><Link href={`/stories/${story.id}/`}>Open reading page <ArrowUpRight size={14}/></Link>
     </article>
   </div>, document.body);
@@ -108,7 +108,7 @@ export default function LunarExplorer({ onSearch }: { onSearch: () => void }) {
   return <section className={`lunar-explorer ${level === 0 ? 'on-surface' : 'inside-base'}`} aria-label="Lunar knowledge explorer" style={{ '--base-accent': base?.accent ?? '#b9cfda' } as CSSProperties}>
     <div className="lunar-topbar"><nav aria-label="Lunar exploration path"><button onClick={() => navigate('overview')}>Universe</button>{trail.map((step, i) => <span key={step.id}><ChevronRight size={12}/><button aria-current={i === trail.length - 1 ? 'page' : undefined} onClick={() => explore(step.id)}>{step.id === 'knowledge' ? 'Moon' : step.name}</button></span>)}</nav><button className="lunar-find" onClick={onSearch}><Search size={14}/> Quick Find</button></div>
     {level === 0 ? <>
-      <div className="lunar-surface-heading"><span className="eyebrow">KNOWLEDGE & GROWTH / LUNAR SURFACE</span><h1>My Knowledge & Skills</h1><p>Explore my learning notes and skills.<br/>Choose Technology or Languages to get started.</p></div>
+      <div className="lunar-surface-heading"><span className="eyebrow">KNOWLEDGE & GROWTH / LUNAR SURFACE</span><h1>My Knowledge & Skills</h1><p>Full-stack development, cloud infrastructure,<br/>AI, and four languages. Choose a base to explore.</p></div>
       <div className="lunar-landing-strip"><span><ScanLine size={14}/> SELECT A LANDING SITE</span>{lunarBases.map(site => <button key={site.id} onClick={() => explore(site.id)}>{site.id === 'it' ? <Cpu size={16}/> : <Globe2 size={16}/>}<span><small>BASE / {site.code}</small>{site.name}</span><ArrowUpRight size={15}/></button>)}</div>
       <div className="lunar-surface-caption"><Radio size={13}/> TWO BASES. ONE OPEN NOTEBOOK.<span>Drag to orbit · Select a landing beacon</span>{surfaceNotes[0]&&<button onClick={()=>patch({activeStoryId:surfaceNotes[0].id})}>Open lunar field note ↗</button>}</div>
     </> : <div className={`lunar-base-deck ${level===1?'is-floorplan':'is-workroom'}`} key={base?.id}>

@@ -1,11 +1,16 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { fleetShips, isFleetShipId, workProjects } from '../data/works';
+import { fleetShips, solarFleetShips, isFleetShipId, workProjects } from '../data/works';
 import { useUniverse } from '../stores/universe';
 
-test('the first works fleet has exactly one flagship and two distinct project vessels', () => {
-  assert.deepEqual(fleetShips.map(ship=>ship.id), ['flagship','research','communications']);
-  assert.equal(new Set(fleetShips.map(ship=>ship.code)).size,3);
+test('all seven projects have vessels while the solar icon keeps the original three', () => {
+  assert.equal(fleetShips.length,8);
+  assert.deepEqual(solarFleetShips.map(ship=>ship.id),['flagship','research','communications']);
+  assert.equal(new Set(fleetShips.map(ship=>ship.code)).size,8);
+  assert.equal(Object.keys(workProjects).length,7);
+  assert.equal(fleetShips.filter(ship=>ship.id!=='flagship'&&workProjects[ship.id].category==='IT PROJECT').length,6);
+  assert.equal(workProjects['booking-system'].status,'SERVICE PAUSED · HOSTING COSTS');
+  for(const ship of fleetShips)if(ship.id!=='flagship')assert.equal(ship.name,workProjects[ship.id].title);
   assert.equal(isFleetShipId('communications'),true);
   assert.equal(isFleetShipId('unknown'),false);
   assert.ok(workProjects.research.category.includes('IT'));

@@ -43,6 +43,7 @@ a.planet-label em strong{display:block;margin-top:8px;font-size:10px;color:#e8c8
 .profile-sections section{padding:20px 0;border-top:1px solid var(--line)}
 .profile-sections h3{font-size:13px;color:#d7bd94;margin:0 0 12px}
 .profile-sections p{font-size:12px;line-height:2.2;color:#9faec1;margin:0}
+.profile-sections p+p{margin-top:22px}
 .profile-sections a{display:block;margin-top:12px;font-size:11px;color:#d5b98e}
 .sun-view .year-control{display:none}
 @media(max-width:600px){.sun-view .story-panel{inset:calc(max(760px,100svh) - 335px) 5% auto;width:90%;max-width:90%;max-height:265px}.profile-sections p{font-size:11px}}
@@ -240,3 +241,35 @@ a.planet-label em strong{display:block;margin-top:8px;font-size:10px;color:#e8c8
 @media(max-width:1190px){.works-panel{width:40%;padding:24px}.works-dock{flex-wrap:wrap;gap:7px;max-width:56%}.works-dock button{padding:10px 12px}.works-dock-code{display:none}.works-scene-caption h1{font-size:34px}}
 @media(max-width:700px){.works-explorer{inset:145px 5% 16px}.works-path{font-size:8px;gap:7px}.works-path button{font-size:9px}.works-scene-caption{top:45px;left:1%}.works-scene-caption h1{font-size:28px;margin:9px 0 7px}.works-scene-caption .eyebrow{font-size:6px;letter-spacing:1px}.works-scene-caption p{font-size:10px}.works-panel{top:auto;bottom:80px;right:0;width:100%;max-height:36svh;padding:20px 23px}.works-panel h2{font-size:26px;margin:14px 0}.works-panel .panel-top{margin-bottom:14px}.works-emblem{display:none}.works-intro{font-size:11px;line-height:1.9}.works-summary{margin-top:15px}.works-summary>button{padding:14px 0;font-size:12px}.works-summary small{font-size:9px}.works-note{font-size:9px;margin-top:18px}.works-project-sections p{font-size:11px}.works-dock{max-width:none;width:100%;gap:6px;flex-wrap:nowrap}.works-dock button{flex:1;min-width:0;padding:10px 8px;font-size:9px;line-height:1.5;gap:0}.works-dock button>span:not(.works-dock-code){min-width:0;overflow-wrap:anywhere}.works-dock button>svg{display:none}.works-dock button small{font-size:7px;margin-top:4px}.fleet-label{padding:7px 9px;gap:4px}.fleet-label strong{font-size:10px}.fleet-label>span{font-size:7px}.fleet-label small{font-size:6px}.works-select-hint{width:80%;right:10%;top:60%;font-size:23px;text-align:center}}
 @media(prefers-reduced-motion:reduce){.fleet-label{transition:none}}
+
+.hero-name{display:inline-block;font-size:clamp(26px,2.5vw,38px);font-weight:600;line-height:1.35;letter-spacing:-.6px;color:#f2d7af;text-shadow:0 2px 18px #d4b17b22}
+@media(max-width:600px){.hero-name{font-size:28px;letter-spacing:-.4px}}
+
+/* One solar-map fleet entry; individual project labels belong to My Works only. */
+.fleet-entry-anchor{pointer-events:none}
+.fleet-entry-label{display:flex;flex-direction:column;align-items:center;gap:7px;padding:8px 12px;white-space:nowrap;opacity:0;pointer-events:none;color:#c8cdd3;text-shadow:0 2px 8px #000;transition:opacity .2s}
+.fleet-entry-label>span{font-size:11px;letter-spacing:1.6px}
+.fleet-entry-label>small{font-size:8px;letter-spacing:1px;color:#8292a5}
+.fleet-entry-label:is(.is-highlighted,:focus-visible,:focus-within){opacity:1;pointer-events:auto}
+.fleet-entry-label.is-highlighted>span{color:#e8d1b0}
+.works-view .fleet-label{max-width:170px;white-space:normal;opacity:0;pointer-events:none}
+.works-view .fleet-label:is(.is-highlighted,:hover,:focus-visible){opacity:1;pointer-events:auto}
+.works-view .fleet-label strong{font-size:11px;text-align:center;line-height:1.45;overflow-wrap:anywhere}
+.works-view .fleet-label>span{font-size:7px;text-align:center;line-height:1.5}
+.works-dock{width:58%;max-width:58%;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin;scrollbar-color:#4b6072 transparent;padding-bottom:6px}
+.works-dock button{flex:0 0 175px;min-width:0;white-space:normal}
+.works-dock button>span:not(.works-dock-code){min-width:0;line-height:1.5}
+.works-dock-code{display:none}
+.works-summary{max-height:230px;overflow:auto;scrollbar-width:thin;scrollbar-color:#4b6072 transparent}
+.works-panel .works-note a{color:#d7c19a;overflow-wrap:anywhere}
+@media(max-width:700px){.works-dock{width:100%;max-width:100%}.works-dock button{flex-basis:145px}.works-view .fleet-label{max-width:130px}.works-view .fleet-label strong{font-size:9px}.fleet-entry-label>span{font-size:10px}}
+
+/* Stable project callouts and a compact portfolio introduction. */
+.works-view .fleet-label{width:224px;min-width:224px;max-width:224px;box-sizing:border-box;padding:12px 15px;gap:6px}
+.works-view .fleet-label strong{width:100%;font-size:12px;overflow-wrap:normal;word-break:normal;text-wrap:balance}
+.works-view .fleet-label>span{font-size:9px;line-height:1.6;overflow-wrap:normal}
+.works-overview{margin:24px 0 0;border-top:1px solid #acbbc82a}
+.works-overview>div{padding:17px 0;border-bottom:1px solid #acbbc81f}
+.works-overview dt{font-size:12px;color:#d2dce3;margin-bottom:7px}
+.works-overview dd{margin:0;font-size:11px;line-height:1.8;color:#8fa3b6}
+@media(max-width:700px){.works-view .fleet-label{width:190px;min-width:190px;max-width:190px;padding:10px 12px}.works-view .fleet-label strong{font-size:11px}.works-view .fleet-label>span{font-size:8px}}

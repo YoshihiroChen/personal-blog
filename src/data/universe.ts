@@ -16,20 +16,55 @@ export const themes: Record<ThemeId, { color: string; light: string; label: stri
   rebirth: { color: '#a7b7be', light: '#e2e9ea', label: 'Endings · New beginnings', kind: 0 },
   earth: { color: '#578baa', light: '#8ec9ff', label: 'Journeys · Places', kind: 4 },
 };
-const leaf = (id: string, name: string, english: string, themeId: ThemeId = 'technology', since = 2022): CelestialNode => ({ id, type: 'moon', name, english, themeId, since, description: `Notes, experiments, and things learned along the way with ${english}. Personal entries are coming soon.`, visual: { radius: 0.8 } });
+const skillNotes: Record<string, string> = {
+  "languages": "Chinese: native or bilingual proficiency. Japanese and English: full professional proficiency. German: professional working proficiency. Qualifications include JLPT N1 (161), TOEFL (104), IELTS (7.5), and Goethe-Zertifikat B2.",
+  "chinese": "Native or bilingual proficiency in Chinese.",
+  "english": "Full professional proficiency. Studied English Literature at Sun Yat-sen University from 2019 to 2023. TOEFL: 104, issued by ETS in April 2023; IELTS: 7.5, British Council. GRE: 322, issued by ETS in October 2022.",
+  "japanese": "Full professional proficiency. JLPT N1: 161, awarded by the Japan Foundation and Japan Educational Exchanges and Services. Received First Prize and then the Special Prize in a 2018 Japanese essay competition, followed by an eight-day exchange in Japan. Supported Japanese-market localisation during a ByteDance internship in 2022.",
+  "german": "Professional working proficiency. Goethe-Zertifikat B2, Goethe-Institut.",
+  "it": "Full-stack Web development across frontend, backend, databases, cloud deployment, and operation. Independent product development since January 2025; Software Engineer at Tata Consultancy Services since April 2026.",
+  "frontend": "Built and operated Web interfaces with Next.js, React, TypeScript, HTML, CSS, JavaScript, Tailwind CSS, and Bootstrap. A Next.js learning platform developed in September–December 2025 has reached approximately 4,000 cumulative users.",
+  "html": "Used in the Rails job-hunting application, the Next.js learning platform, and the ongoing Django team project.",
+  "css": "Used for UI development across Rails, Next.js, and Django projects, including Bootstrap and Tailwind CSS.",
+  "javascript": "Used in frontend development for the Rails service, Next.js interfaces, and the Django team project.",
+  "typescript": "Used with Next.js and React for learning platforms, the RAG study assistant, and the distributed career-consultation booking service.",
+  "react": "Used with Next.js for Web interfaces, including learning content, a study assistant, booking screens, and administration screens.",
+  "nextjs": "Used in a frontend-focused personal project in September–December 2025, reaching approximately 4,000 cumulative users. Since January 2026, responsible for the technical side of a two-person Next.js/FastAPI service, now an IT learning platform supporting a three-student bootcamp. Also used for booking and RAG assistant interfaces.",
+  "threejs": "This personal website uses Three.js for its interactive 3D scenes.",
+  "backend": "Backend and API development with Ruby on Rails, Python, FastAPI, Django, and SQLAlchemy. Experience with MVC, microservices, asynchronous messaging, and API/database design. Leading a four-person Django financial-services project since May 2026; its frontend-focused MVP is in development, with backend functionality being implemented progressively.",
+  "python": "Used with FastAPI, Django, SQLAlchemy, and AI/RAG services. Python projects include an IT learning platform, a distributed booking service, an AI study assistant, and a four-person Django team project.",
+  "fastapi": "Responsible for system design, frontend/backend development, database and API design, deployment, and operation of a two-person Next.js/FastAPI platform since January 2026. Also built microservices for a distributed booking system and a RAG study assistant.",
+  "ruby": "Used Ruby through Ruby on Rails to independently plan, build, deploy, and operate a job-hunting support Web application for international students. Main development: April–August 2025.",
+  "rails": "Independently built a full-stack job-hunting support service using Rails MVC. Features include self-assessment, industry analysis, a job-role database, AI-assisted application essay generation, and schedule management. Main development: April–August 2025; subsequent operation and iteration brought the service to more than 10,000 cumulative users. Stack: Rails, HTML/CSS/JavaScript, Bootstrap, SQLite3, AWS EC2, Nginx, Puma, Git/GitHub, and Google Analytics. Website: https://job-hunting-jp.com/",
+  "nodejs": "A topic reserved for future notes. No separate Node.js backend project is listed in this profile.",
+  "cloud": "Deployed and operated services using AWS EC2, Google Cloud VM, Vercel, Docker, Nginx, and Prometheus. The career-consultation booking service used three servers: two AWS EC2 instances and one Google Cloud VM. It was used for bookings and consultations by at least 10 participants and is currently paused to reduce hosting costs. AWS Cloud Practitioner qualification.",
+  "aws": "AWS Cloud Practitioner qualification. Practical AWS EC2 experience deploying and operating Rails and FastAPI services, including two Booking API instances in a three-server AWS/GCP deployment.",
+  "docker": "Used for containerised development and operation of FastAPI, Next.js, the RAG assistant, and the distributed booking service.",
+  "cicd": "Used Git and GitHub across projects. Set up GitHub Actions quality checks and container image builds for the distributed booking system, alongside deployment, monitoring, failover, and backup/restore verification.",
+  "linux": "Server deployment and operation with AWS EC2 and Google Cloud VM, Nginx load balancing and HTTPS, Puma, Docker, and Prometheus. Verified failover and backup/restore procedures for a distributed booking service.",
+  "database": "Database design using SQLite3 and PostgreSQL, SQLAlchemy/Alembic, Redis, and pgvector. Combined database constraints, locking, and idempotency to protect bookings; used RabbitMQ with Transactional Outbox and Consumer Inbox for reliable, idempotent asynchronous notifications.",
+  "sql": "Database design for full-stack services using SQLite3 and PostgreSQL. Used SQLAlchemy and Alembic for data access and migrations, and PostgreSQL uniqueness constraints to help prevent duplicate bookings.",
+  "postgresql": "Used for learning-platform and booking data, with SQLAlchemy and Alembic. PostgreSQL uniqueness constraints helped enforce a single successful booking in a test of 100 concurrent requests. Used pgvector to store searchable embeddings for the RAG study assistant.",
+  "redis": "Implemented booking-slot locking and rate limiting. Combined Redis, idempotency keys, and PostgreSQL uniqueness constraints to verify that 100 simultaneous booking requests for one slot resulted in exactly one successful booking.",
+  "ai": "Developing a RAG-based AI learning assistant since June 2026, connected to course materials on an IT learning platform. Built material chunking, embeddings, retrieval, and LLM answer generation; continuing to improve retrieval logic, prompts, chunking, and response quality.",
+  "llm": "Integrated LLM-based answer generation through the OpenAI API in a course-material-aware learning assistant. Also implemented AI-assisted application essay generation in the Rails job-hunting service.",
+  "rag": "Built a searchable knowledge base by chunking and embedding course materials, retrieving relevant passages for a question, and using an LLM to generate a learning-focused response. Stack includes Python, FastAPI, OpenAI API, pgvector, PostgreSQL, SQLAlchemy, Docker, Next.js, React, TypeScript, AWS EC2, and Vercel. Continued development since June 2026.",
+  "agent": "A topic reserved for future notes. The AI project currently described here is a RAG learning assistant; no autonomous-agent project is claimed."
+};
+const leaf = (id: string, name: string, english: string, themeId: ThemeId = 'technology', since = 2025): CelestialNode => ({ id, type: 'moon', name, english, themeId, since, description: skillNotes[id] ?? `Notes and project experience with ${english}.`, visual: { radius: 0.8 } });
 const branch = (id: string, name: string, english: string, children: CelestialNode[]): CelestialNode => ({ ...leaf(id, name, english), type: 'planet', children, visual: { radius: 1.3 } });
 const knowledge: CelestialNode = {
   id: 'knowledge', type: 'moon', name: 'Moon · Knowledge & Growth', english: 'The Moon · Knowledge', themeId: 'moon', since: 2018,
-  description: 'A growing collection of things I learn, from languages to technology. Follow a thread and see where it leads.',
+  description: 'My knowledge and skills across full-stack development, cloud infrastructure, AI-assisted learning, and four languages. Explore the bases for project experience and qualifications.',
   storyIds: ['learning'], visual: { radius: .7, atmosphere: false }, children: [
-    { ...branch('languages', 'Languages', 'A World of Words', [leaf('chinese', 'Chinese', 'Chinese', 'language', 2018), leaf('english', 'English', 'English', 'language', 2018), { ...leaf('japanese', 'Japanese', 'Japanese', 'language', 2020), storyIds: ['japanese'] }, leaf('german', 'German', 'German', 'language', 2025)]), themeId: 'language', since: 2018 },
+    { ...branch('languages', 'Languages', 'A World of Words', [leaf('chinese', 'Chinese', 'Chinese', 'language', 2018), leaf('english', 'English', 'English', 'language', 2018), { ...leaf('japanese', 'Japanese', 'Japanese', 'language', 2018), storyIds: ['japanese'] }, leaf('german', 'German', 'German', 'language', 2025)]), themeId: 'language', since: 2018 },
     { ...branch('it', 'Technology', 'The Art of Building', [
       branch('frontend', 'Frontend', 'Frontend', [leaf('html', 'HTML', 'HTML'), leaf('css', 'CSS', 'CSS'), leaf('javascript', 'JavaScript', 'JavaScript'), leaf('typescript', 'TypeScript', 'TypeScript'), { ...leaf('react', 'React', 'React'), children: [leaf('nextjs', 'Next.js', 'Next.js')] }, leaf('threejs', 'Three.js', 'Three.js')]),
       branch('backend', 'Backend', 'Backend', [leaf('python', 'Python', 'Python'), leaf('fastapi', 'FastAPI', 'FastAPI'), leaf('ruby', 'Ruby', 'Ruby'), leaf('rails', 'Rails', 'Rails'), leaf('nodejs', 'Node.js', 'Node.js')]),
       branch('cloud', 'Cloud & Infrastructure', 'Cloud', [leaf('aws', 'AWS', 'AWS'), leaf('docker', 'Docker', 'Docker'), leaf('cicd', 'CI/CD', 'CI/CD'), leaf('linux', 'Linux', 'Linux')]),
       branch('database', 'Databases', 'Database', [leaf('sql', 'SQL', 'SQL'), leaf('postgresql', 'PostgreSQL', 'PostgreSQL'), leaf('redis', 'Redis', 'Redis')]),
       branch('ai', 'Artificial Intelligence', 'Artificial Intelligence', [leaf('llm', 'Large Language Models', 'LLM'), leaf('rag', 'Retrieval-Augmented Generation', 'RAG'), leaf('agent', 'AI Agents', 'AI Agent')]),
-    ]), since: 2022 },
+    ]), since: 2025 },
   ],
 };
 const emotions: CelestialNode = { id: 'emotions', type: 'region', name: 'Inner Worlds', english: 'The Inner Worlds', themeId: 'solitude', description: 'Some experiences take more than a sentence to explain. These worlds leave a little room for them.', children: [

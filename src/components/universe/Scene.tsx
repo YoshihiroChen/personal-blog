@@ -56,8 +56,8 @@ function CameraRig({ controls }: { controls: React.RefObject<OrbitControlsImpl |
     const intro = overview && mode === 'overview' && !introComplete;
     const views = entryCameraPositions(aspect);
     const lunar = lunarLocation(focusedId);
-    const destination = overview ? (solarExploring ? views.explore : views.close) : mode==='works'?{x:-1.8,y:aspect<.75?8:7,z:aspect<.75?24:17}: lunar ? {x:0,y:.65,z:Math.max(11.8,8.2/aspect)} : focusedId === 'earth' ? { x: -2.5, y: 1, z: 10.5 } : focusedId === 'sun' ? { x: 0, y: .6, z: Math.max(12,14/aspect) } : { x: 0, y: 2, z: 16 };
-    const target = mode==='works'?{x:-2.2,y:aspect<.75?-3:0,z:0}:focusedId === 'earth' ? { x: -1.5, y: 0, z: 0 } : { x: 0, y: 0, z: 0 };
+    const destination = overview ? (solarExploring ? views.explore : views.close) : mode==='works'?{x:-1,y:aspect<.75?17:13,z:aspect<.75?29:19}: lunar ? {x:0,y:.65,z:Math.max(11.8,8.2/aspect)} : focusedId === 'earth' ? { x: -2.5, y: 1, z: 10.5 } : focusedId === 'sun' ? { x: 0, y: .6, z: Math.max(12,14/aspect) } : { x: 0, y: 2, z: 16 };
+    const target = mode==='works'?{x:-1,y:aspect<.75?-4:0,z:-1}:focusedId === 'earth' ? { x: -1.5, y: 0, z: 0 } : { x: 0, y: 0, z: 0 };
     let disposed = false;
     const enable = () => { control.enabled = true; if (!disposed) patch({ flying: false }); };
     const finish = () => {
