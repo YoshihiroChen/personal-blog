@@ -49,6 +49,7 @@ function CameraRig({ controls }: { controls: React.RefObject<OrbitControlsImpl |
   const solarExploring = useUniverse(s => s.solarExploring);
   const patch = useUniverse(s => s.patch);
   const flight = useRef<gsap.core.Timeline | null>(null);
+  const initialized = useRef(false);
   useLayoutEffect(() => {
     if (!controls.current) return;
     const control = controls.current;
@@ -58,6 +59,20 @@ function CameraRig({ controls }: { controls: React.RefObject<OrbitControlsImpl |
     const lunar = lunarLocation(focusedId);
     const destination = overview ? (solarExploring ? views.explore : views.close) : mode==='works'?{x:-1,y:aspect<.75?17:13,z:aspect<.75?29:19}: lunar ? {x:0,y:.65,z:Math.max(11.8,8.2/aspect)} : focusedId === 'earth' ? { x: -2.5, y: 1, z: 10.5 } : focusedId === 'sun' ? { x: 0, y: .6, z: Math.max(12,14/aspect) } : { x: 0, y: 2, z: 16 };
     const target = mode==='works'?{x:-1,y:aspect<.75?-4:0,z:-1}:focusedId === 'earth' ? { x: -1.5, y: 0, z: 0 } : { x: 0, y: 0, z: 0 };
+    if (!initialized.current) {
+      initialized.current = true;
+      // Dedicated pages start just outside their own framing, before the first
+      // rendered frame, rather than showing the solar overview camera first.
+      if (focusedId === 'sun' || mode === 'works') {
+        camera.position.set(
+          target.x + (destination.x - target.x) * 1.3,
+          target.y + (destination.y - target.y) * 1.3,
+          target.z + (destination.z - target.z) * 1.3,
+        );
+        control.target.set(target.x, target.y, target.z);
+        control.update();
+      }
+    }
     let disposed = false;
     const enable = () => { control.enabled = true; if (!disposed) patch({ flying: false }); };
     const finish = () => {
@@ -238,6 +253,8 @@ function CelestialSystem() {
 }
 export default function UniverseScene({ onError }: { onError: () => void }) {
   const quality=useUniverse(s=>s.quality), reduced=useUniverse(s=>s.reducedMotion);
+  // Keep Canvas from reapplying the starting position on scene rerenders.
+  const initialCamera=useMemo(()=>({position:[0,45,64] as [number,number,number],fov:42,near:.1,far:900}),[]);
   const controls=useRef<OrbitControlsImpl>(null);
   const lunar=useUniverse(s=>lunarLocation(s.focusedId)?.level??-1);
   useEffect(()=>()=>{document.body.style.cursor='auto';},[]);
@@ -246,7 +263,7 @@ export default function UniverseScene({ onError }: { onError: () => void }) {
   return <Canvas events={state=>({...events(state),compute:(event,state)=>{
     const point=canvasPointer(event.clientX,event.clientY,state.gl.domElement.getBoundingClientRect());
     state.pointer.set(point.x,point.y);state.raycaster.setFromCamera(state.pointer,state.camera);
-  }})} frameloop={reduced||lunar>0?'demand':'always'} camera={{position:[0,45,64],fov:42,near:.1,far:900}} dpr={[1,quality==='high'?2:quality==='low'?1:1.5]} gl={{antialias:quality!=='low',alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.domElement.addEventListener('webglcontextlost',onError,{once:true});}} fallback={<span>Canvas is unavailable in this browser. Use the navigation to explore.</span>}>
+  }})} frameloop={reduced||lunar>0?'demand':'always'} camera={initialCamera} dpr={[1,quality==='high'?2:quality==='low'?1:1.5]} gl={{antialias:quality!=='low',alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.domElement.addEventListener('webglcontextlost',onError,{once:true});}} fallback={<span>Canvas is unavailable in this browser. Use the navigation to explore.</span>}>
     <Starfield/>
     <Suspense fallback={null}><CelestialSystem/></Suspense>
     <OrbitControls ref={controls} enablePan={false} enableDamping dampingFactor={.065} minDistance={6} maxDistance={350} maxPolarAngle={Math.PI*.85} minPolarAngle={Math.PI*.12} rotateSpeed={.4} zoomSpeed={.6}/>
