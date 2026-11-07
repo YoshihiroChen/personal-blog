@@ -1,5 +1,5 @@
 export type FleetHullKind = 'flagship' | 'research' | 'communications';
-export type FleetShipId = FleetHullKind | 'frontend-platform' | 'learning-platform' | 'django-service' | 'rag-assistant' | 'booking-system';
+export type FleetShipId = FleetHullKind | 'frontend-platform' | 'learning-platform' | 'django-service' | 'rag-assistant' | 'booking-system' | 'personal-blog';
 export type WorkProjectId = Exclude<FleetShipId,'flagship'>;
 export interface FleetShip {
   id: FleetShipId; kind: FleetHullKind; name: string; role: string; accent: string; code: string;
@@ -7,13 +7,14 @@ export interface FleetShip {
 }
 export const fleetShips: FleetShip[] = [
   {id:'flagship',kind:'flagship',name:'My Works',role:'Portfolio introduction',accent:'#d9c39b',code:'JC / 001',position:[0,.25,3],scale:.8},
-  {id:'research',kind:'research',name:'Rails Job-Hunting Support',role:'Personal development · Apr–Aug 2025',accent:'#96c8dc',code:'JC / 002',position:[-2.8,0,0],scale:.52},
-  {id:'communications',kind:'communications',name:'My Dream: A Japanese Essay',role:'Award & cultural exchange · 2018',accent:'#dfb58c',code:'JC / 003',position:[2.8,0,0],scale:.52},
-  {id:'frontend-platform',kind:'research',name:'IT Learning Platform',role:'Next.js frontend · Sep–Dec 2025',accent:'#a5c4b4',code:'JC / 004',position:[-3.6,0,-3],scale:.5},
-  {id:'learning-platform',kind:'research',name:'IT Learning & Bootcamp',role:'Next.js + FastAPI · Jan 2026–Present',accent:'#b1b9dc',code:'JC / 005',position:[3.6,0,-3],scale:.52},
-  {id:'django-service',kind:'research',name:'Financial Web Service',role:'Django · Team lead · May 2026–Present',accent:'#b5c996',code:'JC / 006',position:[-4,0,-6],scale:.5},
-  {id:'rag-assistant',kind:'research',name:'RAG Study Assistant',role:'AI learning support · Jun 2026–Present',accent:'#a4d4cf',code:'JC / 007',position:[0,0,-6],scale:.5},
-  {id:'booking-system',kind:'research',name:'Career Consultation Booking',role:'Distributed systems · Aug 2026–Present',accent:'#d4b59f',code:'JC / 008',position:[4,0,-6],scale:.55},
+  {id:'research',kind:'research',name:'Job Hunting Support',role:'Personal development · Rails full stack · Apr–Aug 2025',accent:'#96c8dc',code:'JC / 002',position:[-2.8,0,0],scale:.52},
+  {id:'communications',kind:'communications',name:'My Dream: A Japanese Essay',role:'Individual entry · Japanese writing · 2018',accent:'#dfb58c',code:'JC / 003',position:[2.8,0,0],scale:.52},
+  {id:'frontend-platform',kind:'research',name:'IT Learning Platform',role:'Personal development · Next.js / React · Sep–Dec 2025',accent:'#a5c4b4',code:'JC / 004',position:[-3.6,0,-3],scale:.5},
+  {id:'learning-platform',kind:'research',name:'IT Learning & Bootcamp',role:'Team development · Next.js / FastAPI · Jan 2026–Present',accent:'#b1b9dc',code:'JC / 005',position:[3.6,0,-3],scale:.52},
+  {id:'django-service',kind:'research',name:'Financial Web Service',role:'Team development (lead) · Django · May 2026–Present',accent:'#b5c996',code:'JC / 006',position:[-4,0,-6],scale:.5},
+  {id:'rag-assistant',kind:'research',name:'IT Study AI assistant',role:'Personal development · RAG engineering · Jun 2026–Present',accent:'#a4d4cf',code:'JC / 007',position:[0,0,-6],scale:.5},
+  {id:'booking-system',kind:'research',name:'Career Consultation Booking',role:'Personal development · Next.js / FastAPI / Distributed systems · Aug 2026–Present',accent:'#d4b59f',code:'JC / 008',position:[4,0,-6],scale:.55},
+  {id:'personal-blog',kind:'research',name:'Personal Blog',role:'Personal development · Next.js / React / Three.js · 2026–Present',accent:'#c2a9ec',code:'JC / 009',position:[0,0,-3],scale:.5},
 ];
 /** Only the original three ships form the single solar-map entry. */
 export const solarFleetShips: FleetShip[] = fleetShips.slice(0,3).map((ship,index)=>({
@@ -23,7 +24,15 @@ export const fleetShipById = Object.fromEntries(fleetShips.map(ship=>[ship.id,sh
 export function isFleetShipId(id:string):id is FleetShipId{return fleetShips.some(ship=>ship.id===id);}
 export interface WorkProject {title:string;category:'IT PROJECT'|'LANGUAGE PROJECT';intro:string;sections:{title:string;text:string}[];url?:string;status?:string}
 export const workProjects: Record<WorkProjectId,WorkProject> = {
-  research:{title:'Rails Job-Hunting Support',category:'IT PROJECT',intro:'An independently planned, designed, developed, deployed, and operated job-hunting support Web application for international students. Main development: April–August 2025, followed by ongoing improvements.',sections:[
+  'personal-blog':{title:'Personal Blog',category:'IT PROJECT',intro:'My Universe — the personal website you are exploring now. An independently developed, interactive portfolio that connects my identity, knowledge, work, and travels through a shared universe.',sections:[
+    {title:'Design philosophy',text:'A personal website can be a place to explore, rather than only a page to scroll. The solar system brings different parts of my life into one navigable world: the Sun introduces me, the Moon holds knowledge and skills, Earth records places and experiences, and a fleet carries the things I have made.'},
+    {title:'Knowledge as a landscape',text:'Learning becomes a journey from the lunar surface into Technology and Languages facilities, then into rooms, workstations, and field notes. This spatial hierarchy connects broad interests with the individual ideas I am studying.'},
+    {title:'Work and lived experience',text:'Each project travels aboard its own vessel, with a distinct silhouette and mission equipment. Travel Earth connects personal memories to geographic locations. The universe is a growing record of learning, building, and encountering different cultures.'},
+    {title:'Interaction and accessibility',text:'Camera transitions, orbital motion, lighting, and procedural surfaces create a sense of discovery. Search, breadcrumbs, touch controls, reduced motion, adjustable quality, and text archives provide alternative ways to find and read content.'},
+    {title:'Technology and delivery',text:'Next.js, React, TypeScript, Three.js, React Three Fiber, Drei, GSAP, and Zustand. Static export hosted on Vercel, with browser-rendered 3D scenes and reusable, data-driven content structures.'},
+    {title:'My role & timeline',text:'Personal development: concept, information architecture, interface design, frontend implementation, procedural 3D visuals, and deployment. Developed in 2026 and continuously evolving.'},
+  ]},
+  research:{title:'Job Hunting Support',category:'IT PROJECT',intro:'An independently planned, designed, developed, deployed, and operated job-hunting support Web application for international students. Main development: April–August 2025, followed by ongoing improvements.',sections:[
     {title:'My role',text:'Sole developer, responsible for service planning, frontend and backend development, database design, infrastructure, release, and operation.'},
     {title:'Features',text:'Self-assessment tools, industry research, a job-role database, AI-assisted application essay generation, and job-hunting schedule management, built on Rails MVC.'},
     {title:'Technology',text:'Ruby on Rails, HTML, CSS, JavaScript, Bootstrap, SQLite3, AWS EC2, Nginx, Puma, Git, GitHub, and Google Analytics.'},
@@ -51,7 +60,7 @@ export const workProjects: Record<WorkProjectId,WorkProject> = {
     {title:'Development progress',text:'Currently developing the frontend-focused MVP. Backend functionality is being implemented progressively, with feedback informing feature and quality improvements ahead of a formal release.'},
     {title:'Technology & environment',text:'Python, Django, HTML, CSS, JavaScript, Git, and GitHub. Development is currently local; no public service link is listed.'},
   ]},
-  'rag-assistant':{title:'RAG Study Assistant',category:'IT PROJECT',intro:'An AI learning assistant integrated into my IT learning platform, in development since June 2026. Retrieval-augmented generation connects answers to the platform’s course materials.',sections:[
+  'rag-assistant':{title:'IT Study AI assistant',category:'IT PROJECT',intro:'An AI learning assistant integrated into my IT learning platform, in development since June 2026. Retrieval-augmented generation connects answers to the platform’s course materials.',sections:[
     {title:'Knowledge pipeline',text:'Chunked and embedded course materials into a searchable knowledge base. Retrieves relevant material for a question, then uses a large language model to generate learning-focused answers.'},
     {title:'Ongoing work',text:'Continuing to improve prompts, retrieval logic, chunk splitting, embedding generation, and answer quality.'},
     {title:'Technology',text:'Python, FastAPI, OpenAI API, RAG, pgvector, PostgreSQL, SQLAlchemy, Docker, Next.js, React, TypeScript, AWS EC2, Vercel, Git, and GitHub.'},

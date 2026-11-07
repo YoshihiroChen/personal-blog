@@ -15,4 +15,4 @@ export interface Story {
 export interface TravelPlace { id: string; name: string; english: string; country: string; latitude: number; longitude: number; description: string }
 export interface TravelVisit { id: string; placeId: string; visitedAt: StoryDate; title: string; description: string; photos: { src: string; alt: string }[]; storyIds: string[]; status: 'public' | 'draft' | 'private'; demo: boolean }
 export type Quality = 'low' | 'medium' | 'high';
-export type Mode = 'overview' | 'knowledge' | 'emotions' | 'earth' | 'timeline' | 'works';
+export type Mode = 'overview' | 'knowledge' | 'emotions' | 'earth' | 'works';

@@ -7,7 +7,7 @@ interface UniverseState {
   solarExploring: boolean; beginExploration: () => void;
   introComplete: boolean; interfaceVisible: boolean; toggleInterface: () => void;
   mode: Mode; focusedId: string; selectedId: string | null; activeStoryId: string | null; selectedPlaceId: string | null;
-  year: number; quality: Quality; reducedMotion: boolean; audioEnabled: boolean; flying: boolean;
+  quality: Quality; reducedMotion: boolean; audioEnabled: boolean; flying: boolean;
   explore: (id: string) => void; navigate: (mode: Mode) => void; back: () => void;
   patch: (state: Partial<Omit<UniverseState, 'explore' | 'navigate' | 'back' | 'patch' | 'toggleInterface' | 'beginExploration' | 'openWork'>>) => void;
 }
@@ -19,7 +19,7 @@ export const useUniverse = create<UniverseState>((set, get) => ({
   introComplete: false, interfaceVisible: false,
   toggleInterface: () => set(state => ({ interfaceVisible: !state.interfaceVisible, introComplete: true })),
   mode: 'overview', focusedId: 'universe', selectedId: null, activeStoryId: null, selectedPlaceId: null,
-  year: 2026, quality: 'medium', reducedMotion: false, audioEnabled: false, flying: false,
+  quality: 'medium', reducedMotion: false, audioEnabled: false, flying: false,
   patch: state => set(state),
   explore: id => {
     if(id==='works'){get().openWork('flagship');return;}

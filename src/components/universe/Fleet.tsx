@@ -8,12 +8,18 @@ import { fleetTextures } from '@/lib/fleet-textures';
 import { ignoreOrbitRaycast } from '@/lib/orbits';
 import { useUniverse } from '@/stores/universe';
 
-function hull(kind: FleetShip['kind']) {
+function hull(kind: FleetShip['kind'], id: FleetShip['id']) {
   const shape=new THREE.Shape();
   const width=kind==='research'?.8:kind==='communications'?.95:1.15;
   shape.moveTo(0,2.15);shape.lineTo(.38,1.4);shape.lineTo(.5,.35);shape.lineTo(width,-.7);shape.lineTo(width*.85,-1.1);shape.lineTo(.61,-.95);shape.lineTo(.55,-1.75);shape.lineTo(-.55,-1.75);shape.lineTo(-.61,-.95);shape.lineTo(-width*.85,-1.1);shape.lineTo(-width,-.7);shape.lineTo(-.5,.35);shape.lineTo(-.38,1.4);shape.closePath();
   const geometry=new THREE.ExtrudeGeometry(shape,{depth:.22,steps:1,bevelEnabled:true,bevelSize:.065,bevelThickness:.06,bevelSegments:2});
   geometry.rotateX(Math.PI/2);geometry.translate(0,.05,0);
+  const proportions: Partial<Record<FleetShip['id'],[number,number,number]>> = {
+    research:[1.1,1,1], 'frontend-platform':[1.25,.85,.85],
+    'learning-platform':[.9,1,1.2], 'django-service':[1.2,1.3,.95],
+    'rag-assistant':[.85,1,1.15], 'booking-system':[1.15,1,1.1], 'personal-blog':[1,1,.9],
+  };
+  geometry.scale(...(proportions[id]??[1,1,1]));
   const positions=geometry.getAttribute('position'),normals=geometry.getAttribute('normal'),uvs=new Float32Array(positions.count*2);
   for(let i=0;i<positions.count;i++){
     const x=positions.getX(i),y=positions.getY(i),z=positions.getZ(i);
@@ -63,11 +69,55 @@ function DeckDetails({ low, accent }: { low: boolean; accent: string }) {
     {!low&&[-.17,0,.17].map(x=><mesh key={x} position={[x,.37,-.101]} rotation={[-.15,0,0]}><boxGeometry args={[.012,.08,.012]}/><meshStandardMaterial color="#344752" metalness={.55} roughness={.5}/></mesh>)}
   </group>;
 }
+/** Mission equipment gives each project its own silhouette without remote assets. */
+function ResearchEquipment({ship,solar}:{ship:FleetShip;solar:THREE.Texture}) {
+  const metal=<meshStandardMaterial color="#b5c7ce" metalness={.65} roughness={.48}/>;
+  const light=<meshBasicMaterial color={ship.accent}/>;
+  const wingScale=ship.id==='frontend-platform'?1.3:ship.id==='rag-assistant'?.7:1;
+  return <group>
+    <group scale={[wingScale,1,ship.id==='learning-platform'?1.25:.85]}>
+      <PanelWing side={-1} map={solar}/><PanelWing side={1} map={solar}/>
+    </group>
+    {ship.id==='research'&&[-1,1].map(side=><group key={side} position={[side*.7,.22,.15]}>
+      <mesh rotation={[Math.PI/2,0,0]}><cylinderGeometry args={[.19,.19,1.25,12]}/>{metal}</mesh>
+      <mesh position={[0,0,.64]}><circleGeometry args={[.14,12]}/>{light}</mesh>
+    </group>)}
+    {ship.id==='frontend-platform'&&[-1,1].map(side=><group key={side} position={[side*.68,.3,.65]} rotation={[0,side*.3,0]}>
+      <mesh><boxGeometry args={[.5,.12,1.25]}/>{metal}</mesh>
+      <mesh position={[0,.07,0]}><boxGeometry args={[.35,.02,.9]}/>{light}</mesh>
+    </group>)}
+    {ship.id==='learning-platform'&&[-1,1].map(side=><group key={side} position={[side*.65,.35,.3]}>
+      <mesh><boxGeometry args={[.36,.45,1.9]}/>{metal}</mesh>
+      {[-.5,0,.5].map(z=><mesh key={z} position={[0,.24,z]}><boxGeometry args={[.3,.025,.16]}/>{light}</mesh>)}
+    </group>)}
+    {ship.id==='django-service'&&<group position={[0,.55,.35]}>
+      {[0,.24,.48].map(y=><mesh key={y} position={[0,y,0]}><boxGeometry args={[.85,.16,.85]}/>{metal}</mesh>)}
+      <mesh position={[0,.6,0]}><octahedronGeometry args={[.22]}/>{light}</mesh>
+    </group>}
+    {ship.id==='rag-assistant'&&<group position={[0,.75,.35]}>
+      <mesh rotation={[Math.PI/2,0,0]}><torusGeometry args={[.55,.055,8,32]}/>{metal}</mesh>
+      <mesh rotation={[0,.5,0]}><torusGeometry args={[.43,.035,8,28]}/>{light}</mesh>
+      <mesh><icosahedronGeometry args={[.23,0]}/><meshStandardMaterial color={ship.accent} emissive={ship.accent} emissiveIntensity={.4} wireframe/></mesh>
+    </group>}
+    {ship.id==='booking-system'&&[-1,0,1].map(side=><group key={side} position={[side*.65,.48,.25]}>
+      <mesh><cylinderGeometry args={[.18,.22,.55,8]}/>{metal}</mesh>
+      <mesh position={[0,.32,0]}><sphereGeometry args={[.12,10,8]}/>{light}</mesh>
+      {side!==0&&<mesh position={[-side*.3,0,0]}><boxGeometry args={[.6,.06,.06]}/>{metal}</mesh>}
+    </group>)}
+    {ship.id==='personal-blog'&&<group position={[0,.72,.3]}>
+      <mesh><sphereGeometry args={[.3,16,12]}/><meshStandardMaterial color="#607fc0" emissive={ship.accent} emissiveIntensity={.2} metalness={.4} roughness={.3}/></mesh>
+      {[0,1,2].map(i=><group key={i} rotation={[.4+i*.65,i*.7,0]}>
+        <mesh><torusGeometry args={[.49+i*.13,.025,6,36]}/>{light}</mesh>
+        <mesh position={[.49+i*.13,0,0]}><sphereGeometry args={[.075,8,6]}/>{metal}</mesh>
+      </group>)}
+    </group>}
+  </group>;
+}
 function Ship({ ship, overview, groupHovered=false }: { ship: FleetShip; overview: boolean; groupHovered?: boolean }) {
   const ref=useRef<THREE.Group>(null);
   const [hovered,setHovered]=useState(false);
   const reduced=useUniverse(state=>state.reducedMotion),quality=useUniverse(state=>state.quality),openWork=useUniverse(state=>state.openWork),selected=useUniverse(state=>state.selectedWorkId===ship.id);
-  const geometry=useMemo(()=>hull(ship.kind),[ship.kind]);
+  const geometry=useMemo(()=>hull(ship.kind,ship.id),[ship.kind,ship.id]);
   const surface=useMemo(()=>fleetTextures(ship.kind,quality==='low'),[ship.kind,quality]);
   useEffect(()=>()=>{geometry.dispose();document.body.style.cursor='auto';},[geometry]);
   useFrame(({clock},delta)=>{
@@ -104,14 +154,7 @@ function Ship({ ship, overview, groupHovered=false }: { ship: FleetShip; overvie
       <mesh position={[0,.52,.15]}><sphereGeometry args={[.16,12,8,0,Math.PI*2,0,Math.PI/2]}/><meshStandardMaterial color="#61889c" metalness={.45} roughness={.3}/></mesh>
       {[-1,1].map(side=><mesh key={side} position={[side*.32,.18,-1.25]}><boxGeometry args={[.16,.10,.28]}/><meshStandardMaterial color="#d2c6a8" roughness={.7}/></mesh>)}
     </>}
-    {ship.kind==='research'&&<>
-      <PanelWing side={-1} map={surface.solar}/><PanelWing side={1} map={surface.solar}/>
-      {[-1,1].map(side=><group key={side} position={[side*.7,.17,.12]}>
-        <mesh rotation={[Math.PI/2,0,0]}><cylinderGeometry args={[.14,.14,.98,12]}/><meshStandardMaterial map={surface.map} bumpMap={surface.packed} bumpScale={.009} roughnessMap={surface.packed} color="#dae4e6" metalness={.4} roughness={.8}/></mesh>
-        <mesh position={[0,0,.5]}><circleGeometry args={[.1,12]}/><meshBasicMaterial color="#80b7cf"/></mesh>
-      </group>)}
-      <mesh position={[0,.54,.2]}><sphereGeometry args={[.17,12,8]}/><meshStandardMaterial color="#7ca2b2" metalness={.55} roughness={.25}/></mesh>
-    </>}
+    {ship.kind==='research'&&<ResearchEquipment ship={ship} solar={surface.solar}/>}
     {ship.kind==='communications'&&<>
       <PanelWing side={-1} warm map={surface.solar}/><PanelWing side={1} warm map={surface.solar}/>
       <group position={[0,.49,.35]} rotation={[.25,0,-.18]}>

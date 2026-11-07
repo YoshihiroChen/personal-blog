@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowUpRight, ChevronRight, Cpu, Globe2, Search, X, BookOpen
 import { useUniverse } from '@/stores/universe';
 import { stories, storyById } from '@/data/stories';
 import { nodeById } from '@/data/universe';
-import { dateLabel, visibleInYear } from '@/lib/content';
+import { dateLabel } from '@/lib/content';
 import { chamberPositions, lunarBases, lunarLocation } from '@/lib/lunar';
 
 function Equipment({ x, y, variant }: { x: number; y: number; variant: number }) {
@@ -53,10 +53,10 @@ function BasePlan({ baseId }: { baseId: string }) {
   </div>;
 }
 function Workroom({ id }: { id: string }) {
-  const { explore, patch, year } = useUniverse();
+  const { explore, patch } = useUniverse();
   const node = nodeById[id];
   const children = node.children ?? [];
-  const records = stories.filter(story => story.status === 'public' && story.celestialNodeIds.includes(id) && visibleInYear(story.date, year));
+  const records = stories.filter(story => story.status === 'public' && story.celestialNodeIds.includes(id));
   return <section className="lunar-workroom" aria-label={`${node.name} workstations`}>
     <div className="workroom-door" aria-hidden="true"><span/> AIRLOCK / {node.name.toUpperCase()} <span/></div>
     <div className="workroom-overview"><span className="eyebrow">{children.length ? 'CHOOSE A WORKSTATION' : 'RESEARCH STATION'}</span><h2>{node.name}</h2><p>{node.description}</p></div>
@@ -100,11 +100,11 @@ function FieldNote() {
   </div>, document.body);
 }
 export default function LunarExplorer({ onSearch }: { onSearch: () => void }) {
-  const { focusedId, explore, navigate, back, patch, year } = useUniverse();
+  const { focusedId, explore, navigate, back, patch } = useUniverse();
   const location = lunarLocation(focusedId);
   if (!location) return null;
   const { trail, base, level, node } = location;
-  const surfaceNotes=stories.filter(story=>story.status==='public'&&story.celestialNodeIds.includes('knowledge')&&visibleInYear(story.date,year));
+  const surfaceNotes=stories.filter(story=>story.status==='public'&&story.celestialNodeIds.includes('knowledge'));
   return <section className={`lunar-explorer ${level === 0 ? 'on-surface' : 'inside-base'}`} aria-label="Lunar knowledge explorer" style={{ '--base-accent': base?.accent ?? '#b9cfda' } as CSSProperties}>
     <div className="lunar-topbar"><nav aria-label="Lunar exploration path"><button onClick={() => navigate('overview')}>Universe</button>{trail.map((step, i) => <span key={step.id}><ChevronRight size={12}/><button aria-current={i === trail.length - 1 ? 'page' : undefined} onClick={() => explore(step.id)}>{step.id === 'knowledge' ? 'Moon' : step.name}</button></span>)}</nav><button className="lunar-find" onClick={onSearch}><Search size={14}/> Quick Find</button></div>
     {level === 0 ? <>

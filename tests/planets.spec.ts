@@ -48,9 +48,23 @@ test('Earth and emotional planets open their matching 3D worlds', async ({ page 
   await expect(page.locator('canvas')).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Main navigation' }).getByRole('button', { name: 'Travel Earth' })).toHaveAttribute('aria-current','page');
   await page.goto('/planets/mercury/');
-  await expect(page.locator('.section-heading h1')).toHaveText('Inner Worlds');
+  await expect(page.locator('.section-heading h1')).toHaveText('Mercury · Adrift');
   await expect(page.getByRole('complementary').getByRole('heading', { name: /Mercury/ })).toBeVisible();
   await page.goto('/planets/sun/');
   await expect(page.locator('.sun-view canvas')).toBeVisible();
   await expect(page.getByRole('complementary').getByRole('heading', { name: 'Experience' })).toBeVisible();
+});
+
+test('every Inner Worlds entry opens its own page with no old stories', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const ids = ['mercury','mars','venus','jupiter','saturn','neptune','uranus','pluto'];
+  for (const id of ids) {
+    await page.goto('/?node=emotions');
+    const entry = page.locator('.node-children button').filter({ hasText: new RegExp(id, 'i') });
+    await entry.click();
+    await expect(page).toHaveURL(new RegExp(`/planets/${id}/$`));
+    await expect(page.locator('.section-heading h1')).toContainText(new RegExp(id, 'i'));
+    await expect(page.locator('.story-list')).toContainText('A little space for a story still to come.');
+    await expect(page.locator('.story-list button')).toHaveCount(0);
+  }
 });

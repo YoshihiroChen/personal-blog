@@ -18,7 +18,7 @@ export default async function PlanetPage({ params }: { params: Promise<{ id: str
   if (!planetIds.includes(id)) notFound();
   const node = nodeById[id];
   if (id === 'sun' || id === 'earth' || id === 'knowledge' || node.parentId === 'emotions') {
-    return <UniverseApp initialNode={node.parentId === 'emotions' ? 'emotions' : id} initialSelected={id}/>;
+    return <UniverseApp initialNode={id} initialSelected={id}/>;
   }
   const related = stories.filter(story => story.status === 'public' && story.celestialNodeIds.includes(id));
   return <ReadingLayout eyebrow={`${node.english.toUpperCase()} / ${themes[node.themeId].label}`} title={node.name} description={node.description}>

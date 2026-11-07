@@ -3,7 +3,6 @@ export function dateLabel(date: StoryDate): string {
   if (date.precision === 'unknown') return 'Date to come';
   return date.end ? `${date.value} — ${date.end}` : date.value;
 }
-export function visibleInYear(date: StoryDate, year: number): boolean { return date.precision === 'unknown' || Number(date.value.slice(0, 4)) <= year; }
 // Matches Three.js SphereGeometry UV orientation for an equirectangular map.
 export function latLngToVector(latitude: number, longitude: number, radius = 1): [number, number, number] {
   const lat = latitude * Math.PI / 180, lng = longitude * Math.PI / 180;

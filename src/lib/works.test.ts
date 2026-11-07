@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 import { fleetShips, solarFleetShips, isFleetShipId, workProjects } from '../data/works';
 import { useUniverse } from '../stores/universe';
 
-test('all seven projects have vessels while the solar icon keeps the original three', () => {
-  assert.equal(fleetShips.length,8);
+test('all eight projects have vessels while the solar icon keeps the original three', () => {
+  assert.equal(fleetShips.length,9);
   assert.deepEqual(solarFleetShips.map(ship=>ship.id),['flagship','research','communications']);
-  assert.equal(new Set(fleetShips.map(ship=>ship.code)).size,8);
-  assert.equal(Object.keys(workProjects).length,7);
-  assert.equal(fleetShips.filter(ship=>ship.id!=='flagship'&&workProjects[ship.id].category==='IT PROJECT').length,6);
+  assert.equal(new Set(fleetShips.map(ship=>ship.code)).size,9);
+  assert.equal(Object.keys(workProjects).length,8);
+  assert.equal(fleetShips.filter(ship=>ship.id!=='flagship'&&workProjects[ship.id].category==='IT PROJECT').length,7);
   assert.equal(workProjects['booking-system'].status,'SERVICE PAUSED · HOSTING COSTS');
   for(const ship of fleetShips)if(ship.id!=='flagship')assert.equal(ship.name,workProjects[ship.id].title);
   assert.equal(isFleetShipId('communications'),true);

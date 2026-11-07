@@ -14,10 +14,10 @@ import { useUniverse } from '@/stores/universe';
 import { ancestors, nodeById, nodes, themes } from '@/data/universe';
 import { stories, storyById } from '@/data/stories';
 import { places, visits } from '@/data/travels';
-import { dateLabel, visibleInYear } from '@/lib/content';
+import { dateLabel } from '@/lib/content';
 import type { Mode } from '@/types/universe';
 const Scene = dynamic(()=>import('@/components/universe/Scene'), {ssr:false,loading:()=><div className="scene-loading"><Orbit size={24}/><span>Finding our place among the stars</span></div>});
-const navigation: {id: Mode | 'about';label: string}[]=[{id:'overview',label:'Explore'},{id:'about',label:'About Me'},{id:'knowledge',label:'Knowledge'},{id:'works',label:'My Works'},{id:'earth',label:'Travel Earth'},{id:'emotions',label:'Inner Worlds'},{id:'timeline',label:'Timeline'}];
+const navigation: {id: Mode | 'about';label: string}[]=[{id:'overview',label:'Explore'},{id:'about',label:'About Me'},{id:'knowledge',label:'Knowledge'},{id:'works',label:'My Works'},{id:'earth',label:'Travel Earth'},{id:'emotions',label:'Inner Worlds'}];
 class SceneBoundary extends Component<{children:ReactNode;fallback:ReactNode},{failed:boolean}>{
   state={failed:false};static getDerivedStateFromError(){return{failed:true};}
   render(){return this.state.failed?this.props.fallback:this.props.children;}
@@ -38,22 +38,23 @@ function AmbientAudio() {
   },[enabled]);return null;
 }
 function StoryPanel() {
-  const {selectedId,activeStoryId,selectedPlaceId,year,patch,explore}=useUniverse();
+  const {selectedId,activeStoryId,selectedPlaceId,patch,explore}=useUniverse();
   const node=selectedId?nodeById[selectedId]:null;
   const story=activeStoryId?storyById[activeStoryId]:null;
   const place=places.find(p=>p.id===selectedPlaceId);
   const panelRef=useRef<HTMLElement>(null);
   useEffect(()=>{panelRef.current?.focus({preventScroll:true});},[selectedId,activeStoryId,selectedPlaceId]);
   if(!node&&!story&&!place)return null;
-  const related=stories.filter(s=>s.status==='public'&&visibleInYear(s.date,year)&&s.celestialNodeIds.includes(node?.id??''));
+  if(node?.id==='earth'&&!story&&!place)return null;
+  const related=stories.filter(s=>s.status==='public'&&s.celestialNodeIds.includes(node?.id??''));
   const storyIndex=related.findIndex(s=>s.id===activeStoryId);
   return <aside className="story-panel glass" ref={panelRef} tabIndex={-1} aria-label="Explore content">
     <div className="panel-top"><span className="eyebrow">{place?'FIELD NOTES':story?'A CHAPTER OF LIFE':'CELESTIAL ARCHIVE'}</span><button className="icon-button" aria-label="Close content panel" onClick={()=>patch({selectedId:null,activeStoryId:null,selectedPlaceId:null})}><X size={17}/></button></div>
     {place?<>
       <span className="panel-kicker">{place.country} / {place.latitude.toFixed(2)}° N · {place.longitude.toFixed(2)}° E</span>
       <h2>{place.name}{place.english!==place.name&&<span>{place.english}</span>}</h2><p className="panel-description">{place.description}</p>
-      <span className="demo-tag">Sample destination</span>
-      <div className="visit-list">{visits.filter(v=>v.placeId===place.id&&v.status==='public'&&visibleInYear(v.visitedAt,year)).map(v=><article key={v.id}><time>{dateLabel(v.visitedAt)}</time><h3>{v.title}</h3><p>{v.description}</p>{v.photos.map(photo=><img key={photo.src} src={photo.src} alt={photo.alt} loading="lazy"/>)}{v.storyIds.filter(id=>storyById[id]&&visibleInYear(storyById[id].date,year)).map(id=><button className="text-button" key={id} onClick={()=>patch({activeStoryId:id,selectedPlaceId:null})}>Read story <ArrowRight size={14}/></button>)}</article>)}</div>
+
+      <div className="visit-list">{visits.filter(v=>v.placeId===place.id&&v.status==='public').map(v=><article key={v.id}><time>{dateLabel(v.visitedAt)}</time><h3>{v.title}</h3><p>{v.description}</p>{v.photos.map(photo=><img key={photo.src} src={photo.src} alt={photo.alt} loading="lazy"/>)}{v.storyIds.filter(id=>storyById[id]).map(id=><button className="text-button" key={id} onClick={()=>patch({activeStoryId:id,selectedPlaceId:null})}>Read story <ArrowRight size={14}/></button>)}</article>)}</div>
     </>:story?<>
       <button className="text-button panel-return" onClick={()=>patch({activeStoryId:null})}><ArrowLeft size={13}/> Back to this world</button>
       <time className="panel-kicker">{dateLabel(story.date)}</time><h2>{story.title}</h2><p className="serif subtitle">{story.subtitle}</p>
@@ -65,9 +66,8 @@ function StoryPanel() {
     </>:node?.id==='sun'?<AboutProfile/>:node?<>
       <div className="planet-emblem" style={{'--planet-color':themes[node.themeId].color} as React.CSSProperties}><Orbit size={27} strokeWidth={1}/></div>
       <span className="panel-kicker">{themes[node.themeId].label}</span><h2>{node.name}{node.english!==node.name&&<span>{node.english}</span>}</h2><p className="panel-description">{node.description}</p>
-      {(node.since??0)>year&&<p className="future-note">Up ahead · {node.since}</p>}
-      {node.children?.length?<div className="node-children"><h3>Keep exploring <span>{String(node.children.length).padStart(2,'0')}</span></h3>{node.children.map((child,i)=><button key={child.id} onClick={()=>explore(child.id)}><span className="list-number">{String(i+1).padStart(2,'0')}</span><span>{child.name}{child.english!==child.name&&<small>{child.english}</small>}</span><ArrowRight size={14}/></button>)}</div>:null}
-      {node.id==='earth'&&<div className="node-children"><h3>Places on the map <span>DEMO</span></h3>{places.filter(p=>visits.some(v=>v.placeId===p.id&&v.status==='public'&&visibleInYear(v.visitedAt,year))).map(place=><button key={place.id} onClick={()=>patch({selectedPlaceId:place.id})}><Globe2 size={15}/><span>{place.name}<small>{place.english} · {place.country}</small></span><ArrowRight size={14}/></button>)}</div>}
+      {node.children?.length?<div className="node-children"><h3>Keep exploring <span>{String(node.children.length).padStart(2,'0')}</span></h3>{node.children.map((child,i)=><button key={child.id} onClick={()=>{if(child.parentId==='emotions')window.location.assign(planetHref(child.id));else explore(child.id);}}><span className="list-number">{String(i+1).padStart(2,'0')}</span><span>{child.name}{child.english!==child.name&&<small>{child.english}</small>}</span><ArrowRight size={14}/></button>)}</div>:null}
+      {node.id==='earth'&&<div className="node-children"><h3>Places on the map <span>{places.length}</span></h3>{places.filter(p=>visits.some(v=>v.placeId===p.id&&v.status==='public')).map(place=><button key={place.id} onClick={()=>patch({selectedPlaceId:place.id})}><Globe2 size={15}/><span>{place.name}<small>{place.english} · {place.country}</small></span><ArrowRight size={14}/></button>)}</div>}
       <div className="story-list"><h3>Stories from this world <span>{String(related.length).padStart(2,'0')}</span></h3>{related.length?related.map(story=><button key={story.id} onClick={()=>patch({activeStoryId:story.id})}><time>{dateLabel(story.date)}</time><span>{story.title}</span><ArrowRight size={14}/></button>):<p className="empty-note">A little space for a story still to come.</p>}</div>
       <span className="demo-note">Some entries are samples; personal notes are labelled separately.</span>
     </>:null}
@@ -77,7 +77,7 @@ export default function UniverseApp({initialNode,initialSelected,initialWork}:{i
   const router=useRouter();
   const pathname=usePathname();
   const {solarExploring,beginExploration,openWork}=useUniverse();
-  const state=useUniverse();const {mode,focusedId,selectedId,year,quality,reducedMotion,audioEnabled,introComplete,interfaceVisible,toggleInterface,patch,navigate,explore,back}=state;
+  const state=useUniverse();const {mode,focusedId,selectedId,quality,reducedMotion,audioEnabled,introComplete,interfaceVisible,toggleInterface,patch,navigate,explore,back}=state;
   const [searchOpen,setSearchOpen]=useState(false),[query,setQuery]=useState(''),[settingsOpen,setSettingsOpen]=useState(false),[failed,setFailed]=useState(false),[notice,setNotice]=useState('');
   const [sceneReady,setSceneReady]=useState(false);
   const lunarActive=Boolean(lunarLocation(focusedId));
@@ -114,10 +114,8 @@ export default function UniverseApp({initialNode,initialSelected,initialWork}:{i
       <nav className="main-nav" aria-label="Main navigation">{navigation.map(item=>{const active=item.id==='about'?focusedId==='sun':focusedId!=='sun'&&mode===item.id;return <button key={item.id} className={active?'active':''} aria-current={active?'page':undefined} onClick={()=>{if(item.id==='about'){if(pathname?.replace(/\/$/,'')===planetHref('sun').replace(/\/$/,'')){explore('sun');}else router.push(planetHref('sun'));}else if(item.id==='works'){if(pathname?.replace(/\/$/,'')==='/works'){navigate('works');}else router.push('/works/');}else navigate(item.id);}}>{item.label}</button>;})}</nav>
       <div className="header-actions"><button className="icon-button" aria-label="Search this universe" onClick={()=>setSearchOpen(true)}><Search size={17}/></button><span className="action-divider"/><button className={`icon-button ${audioEnabled?'enabled':''}`} aria-label={audioEnabled?'Mute ambient audio':'Enable ambient audio'} aria-pressed={audioEnabled} onClick={()=>{if(typeof AudioContext==='undefined'){setNotice('Ambient audio isn’t available in this browser.');return;}patch({audioEnabled:!audioEnabled});}}>{audioEnabled?<Volume2 size={17}/>:<VolumeX size={17}/>}</button><button className="icon-button" aria-label="Visual settings" onClick={()=>setSettingsOpen(v=>!v)}><Settings2 size={17}/></button><button className="icon-button fullscreen-button" aria-label="Toggle full screen" onClick={toggleFullscreen}><Maximize size={16}/></button></div>
     </header>
-    {focusedId==='universe'&&mode!=='timeline'?<section className={`hero ${solarExploring?'exploring':''}`}><div className="eyebrow hero-eyebrow"><span className="live-dot"/> JIAHONG CHEN / A PERSONAL SPACE</div><h1>Welcome to<br/><span className="serif">my universe.</span></h1><p className="hero-description"><span className="hero-name">I’m Jiahong Chen.</span><br/>A few things I’m learning, places I’m discovering,<br/>and stories I’m collecting along the way.</p><button className="explore-button" onClick={beginExploration}><Compass size={17}/><span>Start exploring</span><ArrowRight size={17}/></button></section>:<section className="section-heading"><button className="text-button" onClick={back}><ArrowLeft size={14}/> Back</button><div className="eyebrow">{mode==='timeline'?'TRACES THROUGH TIME':nodeById[focusedId]?.english.toUpperCase()}</div><h1>{mode==='timeline'?'Through the years':focusedId==='sun'?'About Me':nodeById[focusedId]?.name}</h1><p>{mode==='timeline'?'Move through the years and revisit the stories along the way.':nodeById[focusedId]?.description}</p>{mode==='earth'&&<span className="demo-tag">Sample places · Drag to turn the globe</span>}</section>}
+    {focusedId==='universe'?<section className={`hero ${solarExploring?'exploring':''}`}><div className="eyebrow hero-eyebrow"><span className="live-dot"/> JIAHONG CHEN / A PERSONAL SPACE</div><h1>Welcome to<br/><span className="serif">my universe.</span></h1><p className="hero-description"><span className="hero-name">I’m Jiahong Chen.</span><br/>A few things I’m learning, places I’m discovering,<br/>and stories I’m collecting along the way.</p><button className="explore-button" onClick={beginExploration}><Compass size={17}/><span>Start exploring</span><ArrowRight size={17}/></button></section>:<section className="section-heading"><button className="text-button" onClick={back}><ArrowLeft size={14}/> Back</button><div className="eyebrow">{nodeById[focusedId]?.english.toUpperCase()}</div><h1>{focusedId==='sun'?'About Me':nodeById[focusedId]?.name}</h1><p>{nodeById[focusedId]?.description}</p>{mode==='earth'&&<span className="demo-tag">Places & memories · Drag to turn the globe</span>}</section>}
     {mode==='works'?<WorksExplorer/>:lunarActive?<LunarExplorer onSearch={()=>setSearchOpen(true)}/>:<StoryPanel/>}
-    {mode==='timeline'&&<section className="timeline-panel glass"><div className="panel-top"><span className="eyebrow">LIFE IN ORBIT</span><span>{year}</span></div><h2>Moments along the way</h2><div className="timeline-stories">{stories.filter(s=>s.status==='public'&&visibleInYear(s.date,year)).sort((a,b)=>dateLabel(b.date).localeCompare(dateLabel(a.date))).map(story=><button key={story.id} onClick={()=>{explore(story.celestialNodeIds[0]);patch({activeStoryId:story.id});}}><time>{dateLabel(story.date)}</time><span>{story.title}<small>{story.emotionTags.join(' / ')} · Sample</small></span><ArrowRight size={14}/></button>)}</div></section>}
-    <div className={`year-control ${mode==='timeline'?'expanded':''}`}><label htmlFor="year-slider">{year}<span>{year>2026?'Up ahead':''}</span></label><input id="year-slider" aria-label="Choose a year" type="range" min="2018" max="2028" value={year} onChange={e=>{const nextYear=Number(e.target.value);patch({year:nextYear,activeStoryId:state.activeStoryId&&visibleInYear(storyById[state.activeStoryId].date,nextYear)?state.activeStoryId:null,selectedPlaceId:null});}}/><div className="year-scale"><span>2018</span><span>2028</span></div></div>
     {solarExploring&&focusedId==='universe'&&<div className="solar-explore-caption">Pick a planet. See where it takes you.<span>Sun · About Me / Moon · Learning / Earth · Travel</span></div>}
 
     {settingsOpen&&<div className="settings-popover glass"><div className="panel-top"><h2>Visual settings</h2><button className="icon-button" aria-label="Close settings" onClick={()=>setSettingsOpen(false)}><X size={16}/></button></div><label>Quality</label><div className="quality-options">{(['low','medium','high'] as const).map((q,i)=><button key={q} className={quality===q?'active':''} onClick={()=>patch({quality:q})}>{['Low','Medium','High'][i]}{quality===q&&<Check size={12}/>}</button>)}</div><button className="setting-toggle" role="switch" aria-checked={reducedMotion} onClick={()=>patch({reducedMotion:!reducedMotion})}><span>Reduce motion<small>Skip camera animations and pause rotation</small></span><span className={`toggle ${reducedMotion?'on':''}`}/></button><p>Mobile uses low quality by default. Press Esc to stop a camera move.</p></div>}

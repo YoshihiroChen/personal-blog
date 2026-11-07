@@ -16,7 +16,7 @@ import { nodeById, themes } from '@/data/universe';
 import { solarBodies, moonOrbit, SOLAR_DAYS_PER_SECOND, type OrbitElements } from '@/data/solar-system';
 import { orbitalPosition, positionOnEllipse, ignoreOrbitRaycast } from '@/lib/orbits';
 import { places, visits } from '@/data/travels';
-import { latLngToVector, visibleInYear, earthFocusRotation } from '@/lib/content';
+import { latLngToVector, earthFocusRotation } from '@/lib/content';
 import type { CelestialNode } from '@/types/universe';
 import { entryCameraPositions, ENTRY_PAUSE_SECONDS, ENTRY_FLIGHT_SECONDS } from '@/lib/entry';
 import { vertexShader, fragmentShader, atmosphereFragment } from '@/shaders/planet';
@@ -123,19 +123,25 @@ function EarthTextures({ onTextures }: { onTextures: (day: THREE.Texture, night:
   useEffect(()=>{day.colorSpace=THREE.SRGBColorSpace;night.colorSpace=THREE.SRGBColorSpace;onTextures(day,night);},[day,night,onTextures]);
   return null;
 }
-function Planet({ node, position, radius, label=true, central=false, solar=false, quiet=false }: { node: CelestialNode; position: [number,number,number]; radius: number; label?: boolean; central?: boolean; solar?: boolean; quiet?: boolean }) {
-  const openPlanet=()=>{if(solar)window.location.assign(planetHref(node.id));else if(node.parentId==='emotions'){explore('emotions');useUniverse.getState().patch({selectedId:node.id});}else explore(node.id);};
+function Planet({ node, position, radius, label=true, central=false, solar=false, quiet=false, motionPaused }: { node: CelestialNode; position: [number,number,number]; radius: number; label?: boolean; central?: boolean; solar?: boolean; quiet?: boolean; motionPaused?: React.MutableRefObject<boolean> }) {
+  const openPlanet=()=>{if(solar||node.parentId==='emotions')window.location.assign(planetHref(node.id));else explore(node.id);};
   const group=useRef<THREE.Group>(null), surface=useRef<THREE.Mesh>(null), shader=useRef<THREE.ShaderMaterial>(null);
   const [hovered,setHovered]=useState(false);
+  const invalidate=useThree(state=>state.invalidate);
+  const localMoonHovered=useRef(false);
+  const travelMoonHovered=motionPaused??localMoonHovered;
+  useEffect(()=>()=>{if(motionPaused)motionPaused.current=false;},[motionPaused]);
+  const travelMoonHighlight=useRef<THREE.Group>(null);
   const [textures,setTextures]=useState<{day:THREE.Texture;night:THREE.Texture}|null>(null);
   const textureCallback=useMemo(()=>(day:THREE.Texture,night:THREE.Texture)=>setTextures({day,night}),[]);
   const theme=themes[node.themeId];
-  const explore=useUniverse(s=>s.explore), year=useUniverse(s=>s.year), quality=useUniverse(s=>s.quality), reduced=useUniverse(s=>s.reducedMotion), placeId=useUniverse(s=>s.selectedPlaceId);
+  const explore=useUniverse(s=>s.explore), quality=useUniverse(s=>s.quality), reduced=useUniverse(s=>s.reducedMotion), placeId=useUniverse(s=>s.selectedPlaceId);
   const earthMode=useUniverse(s=>s.focusedId==='earth');
   const onMoonSurface=useUniverse(s=>s.focusedId==='knowledge');
+  const travelMoon=earthMode&&node.id==='knowledge';
+  const travelBody=earthMode&&(node.id==='earth'||travelMoon);
   const moonMap=useMemo(()=>node.themeId==='moon'?moonSurfaceTexture(quality==='low'):null,[node.themeId,quality]);
-  const isFuture=!solar&&(node.since??0)>year;
-  const uniforms=useMemo(()=>({uMoonSurface:{value:moonMap},uMoonTexel:{value:new THREE.Vector2(1/(quality==='low'?512:1024),1/(quality==='low'?256:512))},uDetail:{value:quality==='high'?5:quality==='low'?2:3},uSunView:{value:new THREE.Vector3()},uSolarLight:{value:solar||(node.themeId==='moon'&&onMoonSurface)?1:0},uTime:{value:0},uOpacity:{value:isFuture?.28:1},uKind:{value:node.themeId==='earth' && !textures?1:theme.kind},uColor:{value:new THREE.Color(theme.color)},uGlow:{value:new THREE.Color(theme.light)},uDay:{value:textures?.day??null},uNight:{value:textures?.night??null}}),[theme,node.themeId,textures,isFuture,solar,quality,moonMap,onMoonSurface]);
+  const uniforms=useMemo(()=>({uMoonSurface:{value:moonMap},uMoonTexel:{value:new THREE.Vector2(1/(quality==='low'?512:1024),1/(quality==='low'?256:512))},uDetail:{value:quality==='high'?5:quality==='low'?2:3},uSunView:{value:new THREE.Vector3()},uSolarLight:{value:solar||(node.themeId==='moon'&&onMoonSurface)?1:0},uTime:{value:0},uOpacity:{value:1},uKind:{value:node.themeId==='earth' && !textures?1:theme.kind},uColor:{value:new THREE.Color(theme.color)},uGlow:{value:new THREE.Color(theme.light)},uDay:{value:textures?.day??null},uNight:{value:textures?.night??null}}),[theme,node.themeId,textures,solar,quality,moonMap,onMoonSurface]);
   useFrame((state,delta)=>{
     if(solar)uniforms.uSunView.value.set(0,0,0).applyMatrix4(state.camera.matrixWorldInverse);
     else if(node.themeId==='moon'&&onMoonSurface)uniforms.uSunView.value.set(-700,600,900).applyMatrix4(state.camera.matrixWorldInverse);
@@ -146,30 +152,57 @@ function Planet({ node, position, radius, label=true, central=false, solar=false
       const target=new THREE.Quaternion().setFromEuler(new THREE.Euler(...(selected?earthFocusRotation(selected.latitude,selected.longitude):[.12,-Math.PI*1.25,0] as [number,number,number])));
       if(earthMode)surface.current.quaternion.slerp(target,reduced?1:Math.min(1,delta*2));
       else if(!reduced)surface.current.rotation.y+=delta*.025;
-    } else if(!reduced&&!(node.themeId==='moon'&&onMoonSurface))surface.current.rotation.y+=delta*(node.visual?.rotationSpeed??.028);
-    if(group.current){const scale=hovered&&!central?1.06:1;group.current.scale.lerp(new THREE.Vector3(scale,scale,scale),reduced?1:Math.min(1,delta*8));}
+    } else if(!reduced&&!(travelMoon&&travelMoonHovered.current)&&!(node.themeId==='moon'&&onMoonSurface))surface.current.rotation.y+=delta*(node.visual?.rotationSpeed??.028);
+    if(travelMoonHighlight.current)travelMoonHighlight.current.visible=travelMoonHovered.current;
+    if(group.current){const scale=hovered&&!central&&!travelMoon?1.06:1;group.current.scale.lerp(new THREE.Vector3(scale,scale,scale),reduced?1:Math.min(1,delta*8));}
   }, -1);
   const click=(event:ThreeEvent<MouseEvent>)=>{event.stopPropagation();if(!central)openPlanet();};
   const segments=node.themeId==='moon'&&onMoonSurface?(quality==='low'?64:112):quality==='low'?32:quality==='high'?96:64;
-  const enter=(event:ThreeEvent<PointerEvent>)=>{if(central)return;event.stopPropagation();setHovered(true);document.body.style.cursor='pointer';};
-  const leave=()=>{setHovered(false);document.body.style.cursor='auto';};
-  return <group position={position} ref={group} onClick={click} onPointerOver={enter} onPointerOut={leave}>
+  const enter=(event:ThreeEvent<PointerEvent>)=>{
+    if(central)return;
+    event.stopPropagation();
+    // Keep the hit area fixed; the travel tooltip never receives pointer events.
+    if(travelMoon){travelMoonHovered.current=true;invalidate();}
+    setHovered(true);
+    document.body.style.cursor='pointer';
+  };
+  const leave=()=>{
+    if(travelMoon){travelMoonHovered.current=false;invalidate();}
+    setHovered(false);
+    document.body.style.cursor='auto';
+  };
+  return <group position={position} ref={group} onClick={travelMoon?undefined:click} onPointerOver={travelMoon?undefined:enter} onPointerOut={travelMoon?undefined:leave}>
     {solar&&<mesh><sphereGeometry args={[Math.max(radius*1.12,.45),20,16]}/><meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false}/></mesh>}
-    {hovered&&!central&&<Billboard><mesh raycast={ignoreOrbitRaycast}><ringGeometry args={[radius*1.17,radius*1.2,64]}/><meshBasicMaterial color={theme.light} transparent opacity={.75} side={THREE.DoubleSide} depthWrite={false}/></mesh></Billboard>}
-    <mesh ref={surface}>
+    {(travelMoon||hovered&&!central)&&<Billboard ref={travelMoon?travelMoonHighlight:undefined} visible={hovered&&!central}><mesh raycast={ignoreOrbitRaycast}><ringGeometry args={[radius*1.17,radius*1.2,64]}/><meshBasicMaterial color={theme.light} transparent opacity={.75} side={THREE.DoubleSide} depthWrite={false}/></mesh></Billboard>}
+    <mesh ref={surface} raycast={travelBody?ignoreOrbitRaycast:undefined}>
+      {/* Travel visuals stay detailed; pointer events use a small, stable proxy.
+          Keep it inside the rotating surface so marker occlusion stays aligned. */}
+      {travelBody&&<mesh onClick={travelMoon?click:undefined} onPointerOver={travelMoon?enter:undefined} onPointerOut={travelMoon?leave:undefined}>
+        <sphereGeometry args={[radius,20,16]}/>
+        <meshBasicMaterial transparent opacity={0} colorWrite={false} depthWrite={false}/>
+      </mesh>}
       <sphereGeometry args={[radius,segments,segments]} />
-      <shaderMaterial ref={shader} vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms} transparent={isFuture} opacity={isFuture?.35:1} />
-      {node.themeId==='earth'&&earthMode&&places.filter(p=>visits.some(v=>v.placeId===p.id&&v.status==='public'&&visibleInYear(v.visitedAt,year))).map(place=><group key={place.id} position={latLngToVector(place.latitude,place.longitude,radius*1.016)}>
-        <mesh onClick={e=>{e.stopPropagation();useUniverse.getState().patch({selectedPlaceId:place.id,selectedId:'earth',activeStoryId:null});}}><sphereGeometry args={[radius*.016,12,12]}/><meshBasicMaterial color={placeId===place.id?'#ffdda9':'#b8e8ff'}/></mesh>
-        <Html position={latLngToVector(place.latitude,place.longitude,radius*.035)} occlude center distanceFactor={12} style={{pointerEvents:'auto',transform:'translateY(-20px)'}}><button className="city-label" onClick={e=>{e.stopPropagation();useUniverse.getState().patch({selectedPlaceId:place.id});}}>{place.english}</button></Html>
+      <shaderMaterial ref={shader} vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms}  />
+      {node.themeId==='earth'&&earthMode&&places.filter(p=>visits.some(v=>v.placeId===p.id&&v.status==='public')).map(place=><group key={place.id} position={latLngToVector(place.latitude,place.longitude,radius*1.016)}>
+        <mesh onPointerOver={e=>{e.stopPropagation();document.body.style.cursor='pointer';}} onPointerOut={()=>{document.body.style.cursor='auto';}} onClick={e=>{e.stopPropagation();useUniverse.getState().patch({selectedPlaceId:place.id,selectedId:'earth',activeStoryId:null});}}><sphereGeometry args={[radius*.016,12,12]}/><meshBasicMaterial color={placeId===place.id?'#ffdda9':'#b8e8ff'}/>
+          {/* A larger invisible target makes the small point easier to select. */}
+          <mesh><sphereGeometry args={[radius*.03,12,12]}/><meshBasicMaterial transparent opacity={0} colorWrite={false} depthWrite={false}/></mesh>
+        </mesh>
       </group>)}
     </mesh>
     {node.themeId==='earth'&&<Suspense fallback={null}><EarthTextures onTextures={textureCallback}/></Suspense>}
-    {quality!=='low'&&node.visual?.atmosphere!==false&&<mesh><sphereGeometry args={[radius*1.035,48,48]}/><shaderMaterial vertexShader={vertexShader} fragmentShader={atmosphereFragment} uniforms={uniforms} transparent blending={THREE.AdditiveBlending} depthWrite={false}/></mesh>}
+    {quality!=='low'&&node.visual?.atmosphere!==false&&<mesh raycast={earthMode?ignoreOrbitRaycast:undefined}><sphereGeometry args={[radius*1.035,48,48]}/><shaderMaterial vertexShader={vertexShader} fragmentShader={atmosphereFragment} uniforms={uniforms} transparent blending={THREE.AdditiveBlending} depthWrite={false}/></mesh>}
     {node.visual?.rings&&<group rotation={[1.13,.24,-.3]}>
       {[{inner:1.35,outer:1.7,opacity:.32},{inner:1.73,outer:1.94,opacity:.55},{inner:1.97,outer:2.25,opacity:.25}].map((r,i)=><mesh key={i}><ringGeometry args={[radius*r.inner,radius*r.outer,quality==='low'?80:160]}/><shaderMaterial side={THREE.DoubleSide} transparent depthWrite={false} uniforms={{uRingColor:{value:new THREE.Color(theme.light)},uRadius:{value:radius},uAlpha:{value:r.opacity}}} vertexShader={`varying vec3 vLocal;void main(){vLocal=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`} fragmentShader={`varying vec3 vLocal;uniform vec3 uRingColor;uniform float uRadius;uniform float uAlpha;void main(){float r=length(vLocal.xy)/uRadius;float bands=.5+.25*sin(r*215.)+.15*sin(r*463.);float shadow=.35+.65*smoothstep(-.8,.3,normalize(vLocal).x);gl_FragColor=vec4(uRingColor*(.4+bands*.55)*shadow,uAlpha*(.35+bands*.65));}`}/></mesh>)}
     </group>}
-    {label&&<Html position={[0,-radius*(node.visual?.rings?1.8:1.35)-.35,0]} center distanceFactor={solar?undefined:23} wrapperClass="planet-label-anchor" style={{pointerEvents:'none'}} zIndexRange={[15,0]}>{solar?<a href={planetHref(node.id)} className={`planet-label ${quiet?'quiet':''} ${hovered?'hovered':''}`} aria-label={`Explore ${node.name}`} onPointerEnter={()=>{setHovered(true);document.body.style.cursor='pointer';}} onPointerLeave={leave} onFocus={()=>setHovered(true)} onBlur={leave}><span>{node.name}</span><small>{theme.label}</small><em>{node.description}<strong>Step inside →</strong></em></a>:<button className={`planet-label ${quiet?'quiet':''} ${hovered?'hovered':''} ${isFuture?'future':''}`} onClick={()=>explore(node.id)}><span>{node.name}</span><small>{isFuture?'Up ahead':theme.label}</small>{hovered&&<em>{node.description}</em>}</button>}</Html>}
+    {travelMoon&&hovered&&<Html position={[0,-radius-.25,0]} center style={{pointerEvents:'none'}} zIndexRange={[15,0]}>
+      <div role="tooltip" style={{pointerEvents:'none',width:220,padding:'12px 14px',border:'1px solid #b4c3d529',borderRadius:6,background:'#0c1422ed',color:'#c8cdd3',fontSize:11,lineHeight:1.7,textAlign:'center'}}>
+        <strong>Moon · Knowledge &amp; Skills</strong>
+        <p style={{margin:'6px 0 0',fontSize:10,color:'#98a9bc'}}>{node.description}</p>
+        <span style={{display:'block',marginTop:7,fontSize:10,color:'#e8d1b0'}}>Click the Moon to explore →</span>
+      </div>
+    </Html>}
+    {label&&<Html position={[0,-radius*(node.visual?.rings?1.8:1.35)-.35,0]} center distanceFactor={solar?undefined:23} wrapperClass="planet-label-anchor" style={{pointerEvents:'none'}} zIndexRange={[15,0]}>{solar?<a href={planetHref(node.id)} className={`planet-label ${quiet?'quiet':''} ${hovered?'hovered':''}`} aria-label={`Explore ${node.name}`} onPointerEnter={()=>{setHovered(true);document.body.style.cursor='pointer';}} onPointerLeave={leave} onFocus={()=>setHovered(true)} onBlur={leave}><span>{node.name}</span><small>{theme.label}</small><em>{node.description}<strong>Step inside →</strong></em></a>:<button className={`planet-label ${quiet?'quiet':''} ${hovered?'hovered':''}`} onPointerEnter={travelMoon?()=>{travelMoonHovered.current=true;invalidate();}:undefined} onPointerLeave={travelMoon?leave:undefined} onClick={openPlanet}><span>{node.name}</span><small>{theme.label}</small>{hovered&&<em>{node.description}</em>}</button>}</Html>}
   </group>;
 }
 function Orbit({ radius }: { radius: number }) {
@@ -184,8 +217,11 @@ function KeplerOrbit({ orbit, faint=false }: { orbit: OrbitElements; faint?: boo
 }
 function MovingBody({ orbit, days, children }: { orbit: OrbitElements; days: React.RefObject<number>; children: React.ReactNode }) {
   const ref=useRef<THREE.Group>(null);
+  // React initializes the orbit once. Only the frame loop owns its moving
+  // position, so unrelated renders cannot apply an older orbital position.
+  const initialPosition=useMemo(()=>orbitalPosition(orbit,days.current),[orbit,days]);
   useFrame(()=>{ref.current?.position.set(...orbitalPosition(orbit,days.current));},-2);
-  return <group ref={ref} position={orbitalPosition(orbit,days.current)}>{children}</group>;
+  return <group ref={ref} position={initialPosition}>{children}</group>;
 }
 function SolarSystem() {
   const days=useRef(0);
@@ -208,13 +244,15 @@ function SolarSystem() {
   </group>;
 }
 function EarthSystem() {
+  const moonPaused=useRef(false);
   const days=useRef(0),reduced=useUniverse(s=>s.reducedMotion);
   const localMoonOrbit=useMemo(()=>({...moonOrbit,semiMajorAxis:4.7}),[]);
-  useFrame((_,delta)=>{if(!reduced)days.current+=Math.min(delta,.1)*SOLAR_DAYS_PER_SECOND;},-3);
+  useFrame((_,delta)=>{if(!reduced&&!moonPaused.current)days.current+=Math.min(delta,.1)*SOLAR_DAYS_PER_SECOND;},-3);
   return <group position={[-1.8,0,0]}>
     <Planet node={nodeById.earth} position={[0,0,0]} radius={3.3} central label={false}/>
     <KeplerOrbit orbit={localMoonOrbit} faint/>
-    <MovingBody orbit={localMoonOrbit} days={days}><Planet node={nodeById.knowledge} position={[0,0,0]} radius={.45}/></MovingBody>
+    {/* The Moon uses only the fixed-size, pointer-transparent hover tooltip. */}
+    <MovingBody orbit={localMoonOrbit} days={days}><Planet node={nodeById.knowledge} position={[0,0,0]} radius={.45} label={false} motionPaused={moonPaused}/></MovingBody>
   </group>;
 }
 function LunarSurface() {
@@ -227,7 +265,7 @@ function LunarSurface() {
 }
 
 function CelestialSystem() {
-  const focus=useUniverse(s=>s.focusedId), year=useUniverse(s=>s.year);
+  const focus=useUniverse(s=>s.focusedId);
   const node=nodeById[focus]??nodeById.universe;
   if(focus==='universe')return <SolarSystem/>;
   if(focus==='works')return <Fleet/>;
@@ -248,7 +286,6 @@ function CelestialSystem() {
       const r=isRegion?7:5.8;
       return <Planet key={child.id} node={child} position={[Math.cos(angle)*r-1.5,Math.sin(angle)*r*.56,Math.sin(angle)*1.2-1]} radius={isRegion?(child.visual?.radius??1):Math.min(child.visual?.radius??.85,1.15)}/>;
     })}
-    {node.since&&node.since>year&&<Html position={[-1.5,-3.5,0]} center><span className="future-note">Still to come · {node.since}</span></Html>}
   </group>;
 }
 export default function UniverseScene({ onError }: { onError: () => void }) {

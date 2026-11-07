@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import { Vector3, Euler } from 'three';
 import assert from 'node:assert/strict';
-import { dateLabel, latLngToVector, visibleInYear, earthFocusRotation } from './content';
+import { dateLabel, latLngToVector, earthFocusRotation } from './content';
 import { validDate,validateUniverse } from './validate';
 import { useUniverse } from '../stores/universe';
 import { root,themes,ancestors,nodeById } from '../data/universe';
@@ -11,8 +11,6 @@ test('dates preserve unknown precision and year ranges',()=>{
   assert.equal(dateLabel({precision:'year',value:'2020'}),'2020');
   assert.equal(dateLabel({precision:'unknown'}),'Date to come');
   assert.equal(dateLabel({precision:'year',value:'2018',end:'2020'}),'2018 — 2020');
-  assert.equal(visibleInYear({precision:'month',value:'2025-11'},2024),false);
-  assert.equal(visibleInYear({precision:'month',value:'2025-11'},2025),true);
   assert.equal(validDate({precision:'day',value:'2024-02-29'}),true);
   assert.equal(validDate({precision:'day',value:'2023-02-29'}),false);
   assert.equal(validDate({precision:'year',value:'2022',end:'2018'}),false);
@@ -51,7 +49,7 @@ test('moon navigation preserves language stories and deep knowledge navigation',
     useUniverse.getState().explore('japanese');
     const selected=useUniverse.getState();
     assert.equal(selected.mode,'knowledge');
-    assert.deepEqual(stories.filter(story=>story.status==='public'&&story.celestialNodeIds.includes(selected.selectedId!)&&visibleInYear(story.date,selected.year)).map(story=>story.id),['japanese']);
+    assert.deepEqual(stories.filter(story=>story.status==='public'&&story.celestialNodeIds.includes(selected.selectedId!)).map(story=>story.id),['japanese']);
     selected.explore('nextjs');
     useUniverse.getState().back();
     assert.equal(useUniverse.getState().focusedId,'react');

@@ -19,11 +19,11 @@ export default function WorksExplorer() {
         <span className="works-emblem"><Ship size={27} strokeWidth={1}/></span><h2>Things I’ve made.<br/>Things I’ve put into practice.</h2>
         <p className="works-intro">Welcome aboard. This fleet brings together my IT projects and the things I’ve done with languages — a place for the work itself, the decisions behind it, and what I learned along the way.</p>
         <dl className="works-overview"><div><dt>Built end to end</dt><dd>From an initial idea to deployed services and real users.</dd></div><div><dt>Across disciplines</dt><dd>Full-stack development, cloud infrastructure, AI, and cross-cultural communication.</dd></div></dl>
-        <p className="works-note">Explore six IT projects and a Japanese writing experience. Each ship carries one project, from the work behind it to the results and lessons learned.</p>
+        <p className="works-note">Explore seven IT projects and a Japanese writing experience. Each ship carries one project, from the work behind it to the results and lessons learned.</p>
       </>:project?<>
         <button className="text-button" onClick={()=>openWork('flagship')}><ArrowLeft size={13}/> Fleet introduction</button><h2>{project.title}</h2><span className="works-status">{project.status??'PROJECT NOTES'}</span><p className="works-intro">{project.intro}</p>
         <div className="works-project-sections">{project.sections.map(section=><section key={section.title}><h3>{section.title}</h3><p>{section.text}</p></section>)}</div>
-        {project.url?<p className="works-note">{selectedWorkId==='booking-system'?'Project address (service currently paused): ':'Project website: '}<a href={project.url} target="_blank" rel="noopener noreferrer">{project.url.replace(/^https?:\/\//,'')} ↗</a></p>:<p className="works-note">{selectedWorkId==='communications'?'Based on my 2018 competition and exchange experience.':'This project is in local development; no public link is available yet.'}</p>}
+        {project.url?<p className="works-note">{selectedWorkId==='booking-system'?'Project address (service currently paused): ':'Project website: '}<a href={project.url} target="_blank" rel="noopener noreferrer">{project.url.replace(/^https?:\/\//,'')} ↗</a></p>:<p className="works-note">{selectedWorkId==='communications'?'Based on my 2018 competition and exchange experience.':selectedWorkId==='personal-blog'?'You are exploring this project right now.':'This project is in local development; no public link is available yet.'}</p>}
       </>:null}
     </aside>}
     {!ship&&<div className="works-select-hint">Choose a vessel to see what’s aboard.</div>}
