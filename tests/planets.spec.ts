@@ -64,7 +64,13 @@ test('every Inner Worlds entry opens its own page with no old stories', async ({
     await entry.click();
     await expect(page).toHaveURL(new RegExp(`/planets/${id}/$`));
     await expect(page.locator('.section-heading h1')).toContainText(new RegExp(id, 'i'));
-    await expect(page.locator('.story-list')).toContainText('A little space for a story still to come.');
-    await expect(page.locator('.story-list button')).toHaveCount(0);
+    const title = id === 'mars' ? 'Beyond Competition' : id === 'saturn' ? 'Following My Curiosity' : null;
+    if (title) {
+      await expect(page.locator('.story-list')).toContainText(title);
+      await expect(page.locator('.story-list button')).toHaveCount(1);
+    } else {
+      await expect(page.locator('.story-list')).toContainText('A little space for a story still to come.');
+      await expect(page.locator('.story-list button')).toHaveCount(0);
+    }
   }
 });

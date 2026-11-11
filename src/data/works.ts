@@ -58,8 +58,8 @@ export const workProjects: Record<WorkProjectId,WorkProject> = {
   'django-service':{title:'Financial Web Service',category:'IT PROJECT',intro:'Leading a four-person team developing a financial-sector Web service with Django since May 2026. The project is in MVP development and preparing for market validation.',status:'MVP IN DEVELOPMENT',sections:[
     {title:'Team leadership',text:'Led service ideation and planning following team discussions and market research, then guided the technical selection and established a Python/Django development approach.'},
     {title:'Development progress',text:'Currently developing the frontend-focused MVP. Backend functionality is being implemented progressively, with feedback informing feature and quality improvements ahead of a formal release.'},
-    {title:'Technology & environment',text:'Python, Django, HTML, CSS, JavaScript, Git, and GitHub. Development is currently local; no public service link is listed.'},
-  ]},
+    {title:'Technology & environment',text:'Python, Django, HTML, CSS, JavaScript, Git, and GitHub. The application is hosted on Render.'},
+  ],url:'https://finjapan.onrender.com/'},
   'rag-assistant':{title:'IT Study AI assistant',category:'IT PROJECT',intro:'An AI learning assistant integrated into my IT learning platform, in development since June 2026. Retrieval-augmented generation connects answers to the platform’s course materials.',sections:[
     {title:'Knowledge pipeline',text:'Chunked and embedded course materials into a searchable knowledge base. Retrieves relevant material for a question, then uses a large language model to generate learning-focused answers.'},
     {title:'Ongoing work',text:'Continuing to improve prompts, retrieval logic, chunk splitting, embedding generation, and answer quality.'},
